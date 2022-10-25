@@ -1,5 +1,4 @@
 # Ae.github.io
-Windos分布存储
 分布式存储
 运行前提:>
 注意请确保主机(Master)Mysql于Redis运行正常无法错误;
