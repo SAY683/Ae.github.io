@@ -1,0 +1,23 @@
+[package]
+name = "ExternalInterface"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libloading = "*"#:C++_FFL>
+jni = "*"#:java_Fll>
+#+++++++++++++++build+++++++++++++++++++++++
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+path = "src/lib.rs"
+[profile.dev]
+codegen-units = 24
+#发布配置
+[profile.release]
+opt-level = 3
+codegen-units = 1
+strip = true
+lto = true
+

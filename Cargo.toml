@@ -1,0 +1,141 @@
+[package]
+name = "Ae"
+version = "0.1.0"
+edition = "2021"
+authors = ["SAY683@protonmail.com", "3347212843@qq.com"]
+license = "MIT OR Apache-2.0"
+description = "Distributed storage database"
+keywords = ["mysql", "redis", "database"]
+categories = ["command-line-utilities"]
+readme = "README.md"
+homepage = "https://github.com/SAY683/Ae.github.io.git"
+repository = "https://github.com/SAY683/Ae.github.io.git"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#async<+>async<+>async<+>async<+>async<+>async<+>async<+>async<+>async<+>
+tokio = { version = "*", features = ["full"] }#:全域执行async/await>
+futures = "*"#:区域执行async/await>
+async-trait = "*"#:async-trait>
+async-channel = "*"#:线程通信>
+async-stream = "*"#:异步迭代>
+deadpool = { version = "*", features = ["rt_tokio_1", "serde"] }#:通用异步池>
+#async<+>async<+>async<+>async<+>async<+>async<+>async<+>async<+>async<+>
+
+#database<+>database<+>database<+>database<+>database<+>database<+>database<+>
+chrono = "*"#:Mysql|时间>
+sqlx = { version = "*", features = ["runtime-tokio-native-tls", "postgres", "any", "tls", "runtime-actix-native-tls", "macros", "chrono"] }#:Mysql|查询>
+rbatis = { version = "*" }#:ORM(A)>
+rbdc = "*"#:ORM(B)>
+rbdc-mysql = "*"#:ORM Mysql>
+rayon = "*"#:微型本地数据库>
+redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager","r2d2"] }#:Redis|操作>
+r2d2 = "*"#:Redis链接池>
+#database<+>database<+>database<+>database<+>database<+>database<+>database<+>
+
+#serialization<+>serialization<+>serialization<+>serialization<+>serialization<+>
+serde = { version = "*", features = ["derive"] }#:数据序列>
+serde_json = "*"#:json序列>
+serde_yaml = "*"#:yaml序列>
+data-encoding = "*"#:数据编码>
+combine = "*"#:数据解析>
+dotenv = "*"#:环境解析>
+bytes = { version = "*", features = ["serde"] }#:|字节处理>
+datafusion = "*"#:CSV数据查询>
+#serialization<+>serialization<+>serialization<+>serialization<+>serialization<+>
+
+#thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>
+kanal = "0.1.0-pre1"#:线程通信Bata>
+thread_local = "*"#:线程通信副本>
+#thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>
+
+#dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>
+lazy_static = "*"#:惰性初始>
+once_cell = "*"#:|Cell模式全局数据>
+stretto = { version = "*", features = ["full"] }#:缓存>
+#dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>
+
+#dataOptimization<+>dataOptimization<+>dataOptimization<+>dataOptimization<+>dataOptimization<+>
+ahash = "*"#:|哈希(安全)>
+hashbrown = "*"#:|哈希(性能)>
+spin = "*"#:|自旋锁>
+parking_lot = { version = "*", feature = ["const_fair_mutex", "const_mutex", "const_reentrant_mutex", "const_rwlock"] }#:数据锁>
+compact_str = "*"#:String优化版>
+#dataOptimization<+>dataOptimization<+>dataOptimization<+>dataOptimization<+>dataOptimization<+>
+
+#eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>
+num-bigint = { version = "*", features = ["rand"] }#:大随机(rand=0.8可兼容)>
+anyhow = "*"#:Resultj兼容处理>
+thiserror = "*"#:错误指定>
+walkdir = "*"#:文件查询>
+tracing = "*"#:日志A>
+tracing-subscriber = "*"#:日志B>
+log = { version = "*", features = ["std", "serde"] }#:log(A)>
+fast_log = "*"#:log(B)>
+flame = "*"#:测试生成界面>
+opener = "*"#:默认开启>
+whoami = "*"#:环境ID>
+#eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>
+
+#network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>
+nats = "*"#:NATS>
+rustls = "*"#:TLS>
+quinn = "*"#:QUIC>
+uuid = "*"#:ID
+http = "*"#:请求处理>
+reqwest = { version = "*", features = ["json", "socks", "stream", "blocking"] }#:http处理[单线程阻塞]>
+tokio-rustls = "*"#:AsyncTLS>
+#network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>
+
+#gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>
+comfy-table = "*"#:Shll界面>
+symphonia = { version = "*", features = ["symphonia-format-isomp4", "symphonia-bundle-mp3"] }#:音频>
+clap = "*"#:Shll命令解析>
+#gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>
+
+#Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>
+scraper = "*"#:Css解析>
+lettre = "*"#:邮件传输A>
+lettre_email = "*"#<:邮件传输B>
+actix-cors = "*"#:WebA>
+actix-web = "*"#:WebB>
+actix-rt = "*"#:WebC>
+tower = { version = "*", features = ["full"] }#Web构建>
+jsonwebtoken = "*"#:json验证>
+#Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>Web<+>
+
+#NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>
+FileOperations = { path = "./src/FileOperations" }
+MysqlOperating = { path = "./src/MysqlOperating" }
+RedisOperating = { path = "./src/RedisOperating" }
+PropertyMacro = { path = "./src/PropertyMacro" }
+HdfsService = { path = "./src/HdfsService" }
+#NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>
+[workspace]#[集中构建]
+members = ["src/PropertyMacro", "src/ExternalInterface", "src/GuiInterface", "src/FileOperations", "src/MysqlOperating", "src/RedisOperating", "src/HdfsService"]
+[lib]#[高可用库]
+path = "./src/main.rs"
+[profile.dev]#[DEBUG]
+codegen-units = 64
+[profile.release]#[Release]
+opt-level = 3
+codegen-units = 1
+strip = true
+lto = true
+[profile.release.build-override]
+opt-level = 3
+codegen-units = 1
+strip = true
+#[source.ustc]
+#registry = "git://mirrors.ustc.edu.cn/crates.io-index"
+#源配置
+#[[bin]]
+#crate-type = ["cdylib", "staticlib", "rlib"]
+#path = "./src/main.rs"
+#[lib]
+#crate-type = ["cdylib", "staticlib", "rlib"]
+#path = "./src/main.rs"
+# #[tokio::main(flavor = "multi_thread")]// 等价于#[%{HOME}::main]
+# #[%{HOME}::main(flavor = "current_thread")]//基本調度程序是單線程的
+# #![feature(arbitrary_enum_discriminant, type_alias_impl_trait, atomic_from_mut, inline_const, const_mut_refs, associated_type_defaults,array_zip)]

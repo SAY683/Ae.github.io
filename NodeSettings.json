@@ -1,0 +1,9 @@
+{
+  "slave": [
+    {
+      "name": "",
+      "host": ""
+    }
+  ],
+  "hdfs": "./tmp/hdfs"
+}

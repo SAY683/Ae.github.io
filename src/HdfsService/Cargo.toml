@@ -1,0 +1,16 @@
+[package]
+name = "HdfsService"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "*", features = ["derive"] }#:数据序列>
+serde_dynamo = { version = "*", features = ["__aws_lambda_events_0_7", "__aws_sdk_dynamodb_0_19", "__rusoto_core_0_48_crate", "__aws_sdk_dynamodbstreams_0_19"] }#:AWS数据库
+FileOperations = { path = "../FileOperations" }
+MysqlOperating = { path = "../MysqlOperating" }
+RedisOperating = { path = "../RedisOperating" }
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+path = "./src/main.rs"

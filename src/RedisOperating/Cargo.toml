@@ -1,0 +1,18 @@
+[package]
+name = "RedisOperating"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "*", features = ["derive"] }#:数据序列>
+serde_json = "*"#:json序列>
+r2d2 = "*"#:Redis链接池>
+r2d2_redis = "*"#redis链接池>
+redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager", "r2d2"] }#:Redis|操作>
+deadpool-redis = { version = "*", features = ["serde"] }#:Redis链接>
+log = { version = "*", features = ["std", "serde"] }#:log(A)>
+fast_log = "*"#:log(B)>
+async-trait = "*"#:async-trait>
+anyhow = "*"#:Resultj兼容处理>

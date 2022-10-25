@@ -1,0 +1,17 @@
+[package]
+name = "FileOperations"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "*"#:Resultj兼容处理>
+dotenv = "*"#:环境解析>
+whoami = "*"#:环境ID>
+walkdir = "*"#:文件查询>
+compact_str = "*"#:String优化版>
+async-trait = "*"#:async-trait>
+tracing = "*"#:日志A>
+hashbrown = "*"#:|哈希(性能)>
+parking_lot = { version = "*", feature = ["const_fair_mutex", "const_mutex", "const_reentrant_mutex", "const_rwlock"] }#:数据锁>

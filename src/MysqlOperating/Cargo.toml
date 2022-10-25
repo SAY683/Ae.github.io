@@ -1,0 +1,19 @@
+[package]
+name = "MysqlOperating"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "*", features = ["derive"] }#:数据序列>
+serde_json = "*"#:json序列>
+log = { version = "*", features = ["std", "serde"] }#:log(A)>
+fast_log = "*"#:log(B)>
+rbatis = { version = "*" }#:ORM(A)>
+rbdc = "*"#:ORM(B)>
+mysql_async = "*"#:Mysql创建>
+rbdc-mysql = "*"#:ORM Mysql>
+async-trait = "*"#:async-trait>
+anyhow = "*"#:Resultj兼容处理>
+thiserror = "*"#:错误指定>
