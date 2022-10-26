@@ -29,6 +29,7 @@ impl Default for SlimeMysql {
     }
 }
 ///#Mysql_Server
+///#以Macro
 #[async_trait]
 pub trait MysqlServer {
     ///#async_mysql get fn get(e: &str) -> AsyncPool

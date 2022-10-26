@@ -11,7 +11,6 @@ pub mod local_data {
     use std::io::{BufReader, Read, Write};
     use std::ops::{Deref, DerefMut};
     use std::path::PathBuf;
-    use tracing::{event, Level};
 
     ///#本机文件操作
     ///#pub struct LocalFileOperations<const RX: usize, const RS: usize>(pub FileOperations<RS>; RX);
@@ -62,7 +61,7 @@ pub mod local_data {
                 .into_iter()
                 .map(|x| -> <FileOperations<RS> as FileOperation>::Data {
                     x.unwrap_or_else(|b| {
-                        event!(Level::INFO, "IO Error{:?}", b);
+                        eprintln!("IO Error{:?}", b);
                         <FileOperations<RS> as FileOperation>::Data::default()
                     })
                 })

@@ -69,8 +69,6 @@ num-bigint = { version = "*", features = ["rand"] }#:大随机(rand=0.8可兼容
 anyhow = "*"#:Resultj兼容处理>
 thiserror = "*"#:错误指定>
 walkdir = "*"#:文件查询>
-tracing = "*"#:日志A>
-tracing-subscriber = "*"#:日志B>
 log = { version = "*", features = ["std", "serde"] }#:log(A)>
 fast_log = "*"#:log(B)>
 flame = "*"#:测试生成界面>

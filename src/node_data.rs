@@ -9,21 +9,24 @@ use FileOperations::condition::system_environment::SlimeEnvironment;
 use FileOperations::local_data;
 use FileOperations::local_data::{FileOperation, LocalFileOperations};
 use MysqlOperating::MysqlServer;
-use PropertyMacro::{MysqlServer, SlimeEnvironment};
+use PropertyMacro::{MysqlServer, RedisServer, SlimeEnvironment};
+use RedisOperating::RedisServer;
 ///#Master数据
-#[derive(Debug, Serialize, Deserialize, SlimeEnvironment, MysqlServer)]
+#[derive(Debug, Serialize, Deserialize, SlimeEnvironment, MysqlServer, RedisServer)]
 pub struct Master {
     pub local: SocketAddr,
     pub hdfs: PathBuf,
     pub logs: PathBuf,
 }
 ///#节点数据
-#[derive(Debug, Serialize, Deserialize, SlimeEnvironment, MysqlServer)]
+#[derive(Debug, Serialize, Deserialize, SlimeEnvironment, MysqlServer, RedisServer)]
 pub struct Slave {
     //节点
     pub slave: Vec<Node>,
     //slave_hdfs统一配置
     pub hdfs: PathBuf,
+    //slave守护节点
+    pub guard: Node,
 }
 ///#节点
 #[derive(Debug, Serialize, Deserialize, SlimeEnvironment)]
@@ -115,6 +118,10 @@ pub mod slave {
             return Slave {
                 slave: vec![],
                 hdfs: PathBuf::from("./tmp/hdfs"),
+                guard: Node {
+                    name: "".to_string(),
+                    host: "".to_string(),
+                },
             };
         }
     }
@@ -148,17 +155,21 @@ pub mod slave {
     }
     impl From<Vec<Node>> for Slave {
         fn from(value: Vec<Node>) -> Self {
+            let x = Slave::new().unwrap_or_default();
             return Slave {
                 slave: value,
-                hdfs: Slave::new().unwrap_or_default().hdfs,
+                hdfs: x.hdfs,
+                guard: x.guard,
             };
         }
     }
     impl From<Node> for Slave {
         fn from(value: Node) -> Self {
+            let x = Slave::new().unwrap_or_default();
             return Slave {
                 slave: vec![value],
-                hdfs: Slave::new().unwrap_or_default().hdfs,
+                hdfs: x.hdfs,
+                guard: x.guard,
             };
         }
     }
@@ -286,10 +297,11 @@ pub mod master {
     impl From<SocketAddr> for Master {
         ///#首先文件否则默认
         fn from(value: SocketAddr) -> Self {
+            let x = Master::new().unwrap_or_default();
             return Master {
                 local: value,
-                hdfs: Master::new().unwrap_or_default().hdfs,
-                logs: Master::new().unwrap_or_default().logs,
+                hdfs: x.hdfs,
+                logs: x.logs,
             };
         }
     }

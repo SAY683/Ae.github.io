@@ -13,15 +13,18 @@
 注意请确保主机Mysql于Redis运行正常;
 配置:>
 .env:Master节点配置,请确保Master节点设置;
-NodSettings:Slave节点配置,不设置则单机模式;
+NodSettings:Slave节点配置,不设置/或设置不正常则单机模式;
 MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置,Master必须得设置;
 错误:>
 .env:Master配置问题则默认设置
 原理:>
+请基本保持有2-3台节点=======
+slave1:守护节点(副本)由此处理;
+slave2/master:副本存储位置;
+slave3/master:副本存储位置;
  */
-mod beginning;
-mod node_data;
-
+pub mod beginning;
+pub mod node_data;
 pub use crate::node_data::{Master, Slave};
 pub use anyhow::Result;
 use beginning::beginning;
@@ -33,44 +36,34 @@ use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::pin::Pin;
 use tokio::main;
-pub use tracing::instrument;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::{fmt, registry};
 use MysqlOperating::{MysqlServer, SlimeMysql};
-use RedisOperating::SlimeRedis;
+use RedisOperating::{RedisServer, SlimeRedis};
 
 ///#核心执行
 #[main]
 pub async fn main() -> Result<()> {
-    registry().with(fmt::layer()).init();
     initialization().await?;
     run().await?;
     shut_down().await?;
     return Ok(());
 }
 ///#初始化
-#[instrument]
 async fn initialization() -> Result<()> {
     beginning(MODEL)
         .await
         .unwrap_or_else(|_| panic!("Initialization Error"));
     return Ok(());
 }
-
 ///#运行
-#[instrument]
 async fn run() -> Result<()> {
     return Ok(());
 }
-
 ///#关闭
-#[instrument]
 async fn shut_down() -> Result<()> {
     return Ok(());
 }
 lazy_static! {
-    //ping mysql版本返回
+    //ping mysql联通性返回
     pub static ref MYSQL_VERSION: Result<bool> = {
         if MODEL {
             let mut x= block_on(Master::conn(&Master::get_pool(&TEST_MYSQL.get().unwrap().handle()?),))?;
@@ -84,8 +77,14 @@ lazy_static! {
             Ok(r)
         }
     };
-    //ping redis版本返回
-    pub static ref REDIS_VERSION: Result<String>=Ok(String::new());
+    //ping redis联通性返回
+    pub static ref REDIS_VERSION: Result<bool>={
+        if MODEL{
+            Ok(Master::ping_lot(&Master::get_redis(&TEST_REDIS.get().unwrap().handle()?)?)?)
+        }else {
+            Ok(Master::ping_lot(&Master::get_redis(&REDIS.get().unwrap().handle()?)?)?)
+        }
+    };
 }
 //#相关配置
 pub static MASTER: OnceCell<Master> = OnceCell::new();

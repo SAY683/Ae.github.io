@@ -5,5 +5,9 @@
       "host": ""
     }
   ],
-  "hdfs": "./tmp/hdfs"
+  "hdfs": "./tmp/hdfs",
+  "guard": {
+    "name": "",
+    "host": ""
+  }
 }
