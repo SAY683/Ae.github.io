@@ -29,10 +29,12 @@ pub use crate::node_data::{Master, Slave};
 pub use anyhow::Result;
 use beginning::beginning;
 use deadpool::managed::{Manager, Pool};
+use deadpool_redis::redis::Client;
 use futures::executor::block_on;
 use lazy_static::lazy_static;
 use node_data::SlimeNode;
 use once_cell::sync::OnceCell;
+use r2d2_redis::RedisConnectionManager;
 use std::future::Future;
 use std::pin::Pin;
 use tokio::main;
@@ -98,6 +100,8 @@ pub static TEST_MYSQL: OnceCell<SlimeMysql> = OnceCell::new();
 pub static TEST_REDIS: OnceCell<SlimeRedis> = OnceCell::new();
 ///#测试模式true/执行false
 pub const MODEL: bool = true;
+///#通用全局[crate::REDIS_DIR]
+pub const UNIVERSAL_GLOBAL: bool = false;
 ///#节点文件配置
 pub const NODE_INIT: [&str; 2] = [".", "NodeSettings.json"];
 ///#Mysql数据端口配置
@@ -110,3 +114,7 @@ pub struct AsyncDriver<'life, Rx: Sized>(
 );
 ///#异步池[async_trait]实现注意
 pub struct AsynchronousPool<G: Sized + Manager>(pub Pool<G>);
+///#链接池r2d2_redis
+pub static REDIS_DIR: OnceCell<RedisConnectionManager> = OnceCell::new();
+///#链接池deadpool_redis
+pub static REDIS_DIR_INIT: OnceCell<Client> = OnceCell::new();

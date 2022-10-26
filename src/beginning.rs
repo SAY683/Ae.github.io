@@ -1,30 +1,52 @@
 use crate::{
-    Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, MASTER, MYSQL, MYSQL_VERSION, REDIS,
-    REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL, TEST_REDIS, TEST_SLAVE,
+    Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, MASTER, MODEL, MYSQL, MYSQL_VERSION,
+    REDIS, REDIS_DIR, REDIS_DIR_INIT, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL, TEST_REDIS,
+    TEST_SLAVE, UNIVERSAL_GLOBAL,
 };
 use log::{log, Level};
+use r2d2_redis::RedisConnectionManager;
+use RedisOperating::RedisServer;
 
 ///初始
 pub async fn beginning(e: bool) -> Result<()> {
     if e {
         log!(Level::Info, "Testing:<{}>MODE", e);
         testing();
-        match ping().await? {
-            (x, y) if x == y && x == true => {}
-            _ => {
-                panic!("Basic configuration error")
-            }
-        }
+        server_setting(e)
+            .await
+            .unwrap_or_else(|e| log!(Level::Debug, "Data Is Error[{}]", e));
     } else {
         log!(Level::Info, "Execute:<{}>MODE", !e);
         data_ing()?;
-        match ping().await? {
-            (x, y) if x == y && x == true => {}
-            _ => {
-                panic!("Basic configuration error")
-            }
-        }
+        server_setting(e)
+            .await
+            .unwrap_or_else(|e| log!(Level::Debug, "Data Is Error[{}]", e));
     }
+    return Ok(());
+}
+///#数据链接初始
+async fn server_setting(e: bool) -> Result<()> {
+    match ping().await? {
+        (x, y) if x == y && x == true => {
+            if UNIVERSAL_GLOBAL == true {
+                let x = if e {
+                    RedisConnectionManager::new(TEST_REDIS.get().unwrap().handle()?)?
+                } else {
+                    RedisConnectionManager::new(REDIS.get().unwrap().handle()?)?
+                };
+                REDIS_DIR.get_or_init(|| x);
+            };
+            let x = if e {
+                SlimeRedis::get_redis(&TEST_REDIS.get().unwrap().handle()?)?
+            } else {
+                SlimeRedis::get_redis(&REDIS.get().unwrap().handle()?)?
+            };
+            REDIS_DIR_INIT.get_or_init(|| x);
+        }
+        _ => {
+            panic!("Basic configuration error")
+        }
+    };
     return Ok(());
 }
 ///#服务器链接测试 Mysql|Redis|

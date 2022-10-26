@@ -1,9 +1,10 @@
+#![feature(associated_type_defaults)]
 /*
 Redis操作
  */
 use anyhow::Result;
 use async_trait::async_trait;
-use deadpool_redis::redis::{Client, ConnectionLike};
+use deadpool_redis::redis::{cmd, Client, ConnectionLike};
 use deadpool_redis::{Config as PoolConfig, Pool as PoolC, Runtime};
 use r2d2_redis::r2d2::Pool;
 use r2d2_redis::RedisConnectionManager;
@@ -33,22 +34,23 @@ impl Default for SlimeRedis {
 ///#已Macro
 #[async_trait]
 pub trait RedisServer {
-    ///#fn get_redis_r2d2(e:&str)-> Result<Pool<RedisConnectionManager>>
+    ///#deadpool_redis fn get_redis_r2d2(e:&str)-> Result<Pool<RedisConnectionManager>>
     fn get_redis_r2d2(e: &str) -> Result<Pool<RedisConnectionManager>> {
         return Ok(Pool::new(RedisConnectionManager::new(e)?)?);
     }
-    ///#fn get_redis_r2d2(e: &str)->Result<Client>
+    ///#deadpool_redis fn get_redis(e: &str)->Result<Client>
     fn get_redis(e: &str) -> Result<Client> {
         return Ok(Client::open(e)?);
     }
-    ///#fn ping fn ping_lot(e: &Client) -> Result<Connection>
+    ///# fn ping_lot(e: &Client) -> Result<Connection>
     fn ping_lot(e: &Client) -> Result<bool> {
         return Ok(e.get_connection()?.is_open());
     }
 }
 ///#查询池
+///#默认Default Pool<RedisConnectionManager>> (r2d2)
 #[async_trait]
-pub trait RedisServerPoll {
+pub trait RedisServerPoll<T: Sized>: RedisServer + Sized {
     ///#database get Config
     fn get_redis_poll(e: &str) -> PoolConfig {
         return PoolConfig::from_url(e);
@@ -56,5 +58,22 @@ pub trait RedisServerPoll {
     ///#database pool
     fn get_redis_pool(e: PoolConfig) -> Result<PoolC> {
         return Ok(e.create_pool(Some(Runtime::Tokio1))?);
+    }
+    ///#参数
+    type Arg;
+    ///#结果
+    type Data;
+    ///#fn get_redis_cmd(&self, _: &T, _: Self::Arg) -> Result<Self::Data>;
+    async fn get_redis_cmd(&self, _: T, _: Self::Arg) -> Result<Self::Data>;
+}
+impl RedisServer for SlimeRedis {}
+#[async_trait]
+impl RedisServerPoll<Client> for SlimeRedis {
+    type Arg = ();
+    type Data = ();
+    async fn get_redis_cmd(&self, e: Client, _: Self::Arg) -> Result<Self::Data> {
+        let mut x = e.get_connection()?;
+        let _ = cmd("").query::<String>(&mut x);
+        return Ok(());
     }
 }

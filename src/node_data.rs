@@ -55,7 +55,7 @@ pub mod redis_ulr {
     use crate::{SlimeNode, REDIS_PORT_INIT};
     use serde_json::from_str;
     use RedisOperating::SlimeRedis;
-
+    pub struct SlimeRedisServer(pub SlimeRedis);
     impl SlimeNode for SlimeRedis {
         fn new() -> anyhow::Result<Self> {
             let x = SlimeRedis::target(REDIS_PORT_INIT[0], REDIS_PORT_INIT[1])?;
@@ -86,6 +86,7 @@ pub mod mysql_config {
     use crate::{SlimeNode, MYSQL_PORT_INIT};
     use serde_json::from_str;
     use MysqlOperating::SlimeMysql;
+
     impl SlimeNode for SlimeMysql {
         fn new() -> anyhow::Result<Self> {
             let x = SlimeMysql::target(MYSQL_PORT_INIT[0], MYSQL_PORT_INIT[1])?;

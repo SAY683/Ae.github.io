@@ -30,7 +30,9 @@ rbatis = { version = "*" }#:ORM(A)>
 rbdc = "*"#:ORM(B)>
 rbdc-mysql = "*"#:ORM Mysql>
 rayon = "*"#:微型本地数据库>
-redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager","r2d2"] }#:Redis|操作>
+redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager", "r2d2"] }#:Redis|操作>
+deadpool-redis = { version = "*", features = ["serde"] }#:Redis链接>
+r2d2_redis = "*"#redis链接池>
 r2d2 = "*"#:Redis链接池>
 #database<+>database<+>database<+>database<+>database<+>database<+>database<+>
 
