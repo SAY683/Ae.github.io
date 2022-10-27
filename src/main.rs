@@ -5,14 +5,20 @@
     inline_const,
     const_mut_refs,
     associated_type_defaults,
-    array_zip
+    array_zip,
+    box_syntax,
+    let_chains,
+    unboxed_closures,
+    async_closure,
+    type_ascription,
+    never_type
 )]
 /*
 分布式存储
 运行前提:>
 注意请确保主机Mysql于Redis运行正常;
 配置:>
-.env:Master节点配置,请确保Master节点设置;
+.env:Master节点配置,请确保Master节点设置(数字IP);
 NodSettings:Slave节点配置,不设置/或设置不正常则单机模式;
 MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置,Master必须得设置;
 错误:>
@@ -36,6 +42,7 @@ use node_data::SlimeNode;
 use once_cell::sync::OnceCell;
 use r2d2_redis::RedisConnectionManager;
 use std::future::Future;
+use std::net::UdpSocket;
 use std::pin::Pin;
 use tokio::main;
 use MysqlOperating::{MysqlServer, SlimeMysql};
@@ -87,6 +94,16 @@ lazy_static! {
             Ok(Master::ping_lot(&Master::get_redis(&REDIS.get().unwrap().handle()?)?)?)
         }
     };
+    ///#链接池r2d2_redis
+    pub static ref REDIS_DIR:Result<RedisConnectionManager>={
+        Ok(RedisConnectionManager::new(TEST_REDIS.get().unwrap().handle()?)?)
+    };
+    ///#本机ip
+    pub static ref LOCAL_IP: Result<String>={
+        let x = UdpSocket::bind("0.0.0.0:0")?;
+        x.connect("8.8.8.8:80")?;
+        return Ok(x.local_addr()?.ip().to_string());
+    };
 }
 //#相关配置
 pub static MASTER: OnceCell<Master> = OnceCell::new();
@@ -100,8 +117,6 @@ pub static TEST_MYSQL: OnceCell<SlimeMysql> = OnceCell::new();
 pub static TEST_REDIS: OnceCell<SlimeRedis> = OnceCell::new();
 ///#测试模式true/执行false
 pub const MODEL: bool = true;
-///#通用全局[crate::REDIS_DIR]
-pub const UNIVERSAL_GLOBAL: bool = false;
 ///#节点文件配置
 pub const NODE_INIT: [&str; 2] = [".", "NodeSettings.json"];
 ///#Mysql数据端口配置
@@ -114,7 +129,5 @@ pub struct AsyncDriver<'life, Rx: Sized>(
 );
 ///#异步池[async_trait]实现注意
 pub struct AsynchronousPool<G: Sized + Manager>(pub Pool<G>);
-///#链接池r2d2_redis
-pub static REDIS_DIR: OnceCell<RedisConnectionManager> = OnceCell::new();
 ///#链接池deadpool_redis
 pub static REDIS_DIR_INIT: OnceCell<Client> = OnceCell::new();

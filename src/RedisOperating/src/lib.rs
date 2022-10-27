@@ -5,7 +5,7 @@ Redis操作
 use anyhow::Result;
 use async_trait::async_trait;
 use deadpool_redis::redis::{cmd, Client, ConnectionLike};
-use deadpool_redis::{Config as PoolConfig, Pool as PoolC, Runtime};
+use deadpool_redis::{Config as PoolConfig, Connection as ConnectionDesc, Pool as PoolC, Runtime};
 use r2d2_redis::r2d2::Pool;
 use r2d2_redis::RedisConnectionManager;
 use serde::{Deserialize, Serialize};
@@ -32,6 +32,7 @@ impl Default for SlimeRedis {
 }
 ///#RedisServer
 ///#已Macro
+///#基本处理
 #[async_trait]
 pub trait RedisServer {
     ///#deadpool_redis fn get_redis_r2d2(e:&str)-> Result<Pool<RedisConnectionManager>>
@@ -42,7 +43,7 @@ pub trait RedisServer {
     fn get_redis(e: &str) -> Result<Client> {
         return Ok(Client::open(e)?);
     }
-    ///# fn ping_lot(e: &Client) -> Result<Connection>
+    ///#fn ping_lot(e: &Client) -> Result<Connection>
     fn ping_lot(e: &Client) -> Result<bool> {
         return Ok(e.get_connection()?.is_open());
     }
@@ -52,12 +53,16 @@ pub trait RedisServer {
 #[async_trait]
 pub trait RedisServerPoll<T: Sized>: RedisServer + Sized {
     ///#database get Config
-    fn get_redis_poll(e: &str) -> PoolConfig {
+    fn get_redis_con(e: &str) -> PoolConfig {
         return PoolConfig::from_url(e);
     }
     ///#database pool
     fn get_redis_pool(e: PoolConfig) -> Result<PoolC> {
         return Ok(e.create_pool(Some(Runtime::Tokio1))?);
+    }
+    ///#database pool_get
+    async fn get_redis_con_async(e: PoolC) -> Result<ConnectionDesc> {
+        return Ok(e.get().await?);
     }
     ///#参数
     type Arg;

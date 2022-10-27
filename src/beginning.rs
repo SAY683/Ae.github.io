@@ -1,10 +1,12 @@
 use crate::{
-    Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, MASTER, MODEL, MYSQL, MYSQL_VERSION,
-    REDIS, REDIS_DIR, REDIS_DIR_INIT, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL, TEST_REDIS,
-    TEST_SLAVE, UNIVERSAL_GLOBAL,
+    Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, LOCAL_IP, MASTER, MYSQL,
+    MYSQL_VERSION, REDIS, REDIS_DIR_INIT, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL,
+    TEST_REDIS, TEST_SLAVE,
 };
+use compact_str::CompactString;
 use log::{log, Level};
-use r2d2_redis::RedisConnectionManager;
+use FileOperations::local_data;
+use FileOperations::local_data::FileOperation;
 use RedisOperating::RedisServer;
 
 ///初始
@@ -22,20 +24,13 @@ pub async fn beginning(e: bool) -> Result<()> {
             .await
             .unwrap_or_else(|e| log!(Level::Debug, "Data Is Error[{}]", e));
     }
+    file_init(e)?;
     return Ok(());
 }
 ///#数据链接初始
 async fn server_setting(e: bool) -> Result<()> {
     match ping().await? {
         (x, y) if x == y && x == true => {
-            if UNIVERSAL_GLOBAL == true {
-                let x = if e {
-                    RedisConnectionManager::new(TEST_REDIS.get().unwrap().handle()?)?
-                } else {
-                    RedisConnectionManager::new(REDIS.get().unwrap().handle()?)?
-                };
-                REDIS_DIR.get_or_init(|| x);
-            };
             let x = if e {
                 SlimeRedis::get_redis(&TEST_REDIS.get().unwrap().handle()?)?
             } else {
@@ -47,6 +42,22 @@ async fn server_setting(e: bool) -> Result<()> {
             panic!("Basic configuration error")
         }
     };
+    return Ok(());
+}
+///#文件初始
+fn file_init(e: bool) -> Result<()> {
+    let x = if e {
+        (TEST_SLAVE.get().unwrap(), TEST_MASTER.get().unwrap())
+    } else {
+        (SLAVE.get().unwrap(), MASTER.get().unwrap())
+    };
+    if x.0.slave.len() == 0 {
+        master_init(e)?;
+    } else if LOCAL_IP.as_ref().unwrap() == &x.1.local.ip().to_string() {
+        master_init(e)?;
+    } else {
+        eprintln!("Node Tis Not Master");
+    }
     return Ok(());
 }
 ///#服务器链接测试 Mysql|Redis|
@@ -80,4 +91,27 @@ fn testing() {
     TEST_SLAVE.get_or_init(|| Slave::default());
     TEST_MYSQL.get_or_init(|| SlimeMysql::default());
     TEST_REDIS.get_or_init(|| SlimeRedis::default());
+}
+fn master_init(e: bool) -> Result<()> {
+    let Master {
+        local: _,
+        hdfs,
+        logs,
+    } = if e {
+        TEST_MASTER.get().unwrap()
+    } else {
+        MASTER.get().unwrap()
+    };
+    local_data::LocalFileOperations([local_data::FileOperations::Establish([
+        (
+            CompactString::new(hdfs.to_str().unwrap()),
+            Vec::<CompactString>::new(),
+        ),
+        (
+            CompactString::new(logs.to_str().unwrap()),
+            Vec::<CompactString>::new(),
+        ),
+    ])])
+    .run()?;
+    return Ok(());
 }

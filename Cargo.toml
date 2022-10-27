@@ -131,6 +131,7 @@ strip = true
 #registry = "git://mirrors.ustc.edu.cn/crates.io-index"
 #源配置
 #[[bin]]
+#name = "Ae"
 #crate-type = ["cdylib", "staticlib", "rlib"]
 #path = "./src/main.rs"
 #[lib]
@@ -138,4 +139,18 @@ strip = true
 #path = "./src/main.rs"
 # #[tokio::main(flavor = "multi_thread")]// 等价于#[%{HOME}::main]
 # #[%{HOME}::main(flavor = "current_thread")]//基本調度程序是單線程的
-# #![feature(arbitrary_enum_discriminant, type_alias_impl_trait, atomic_from_mut, inline_const, const_mut_refs, associated_type_defaults,array_zip)]
+##![feature(
+#arbitrary_enum_discriminant,
+#type_alias_impl_trait,
+#atomic_from_mut,
+#inline_const,
+#const_mut_refs,
+#associated_type_defaults,
+#array_zip,
+#box_syntax,
+#let_chains,
+#unboxed_closures,
+#async_closure,
+#type_ascription,
+#never_type
+#)]

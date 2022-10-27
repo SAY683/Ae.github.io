@@ -11,6 +11,7 @@ use FileOperations::local_data::{FileOperation, LocalFileOperations};
 use MysqlOperating::MysqlServer;
 use PropertyMacro::{MysqlServer, RedisServer, SlimeEnvironment};
 use RedisOperating::RedisServer;
+
 ///#Master数据
 #[derive(Debug, Serialize, Deserialize, SlimeEnvironment, MysqlServer, RedisServer)]
 pub struct Master {
