@@ -12,8 +12,9 @@ log = { version = "*", features = ["std", "serde"] }#:log(A)>
 fast_log = "*"#:log(B)>
 rbatis = { version = "*" }#:ORM(A)>
 rbdc = "*"#:ORM(B)>
-mysql_async = "*"#:Mysql创建>
-rbdc-mysql = "*"#:ORM Mysql>
+rbdc-mysql = "*"#:ORM(C)>
+rbs="*"#ORM(D)>
 async-trait = "*"#:async-trait>
 anyhow = "*"#:Resultj兼容处理>
 thiserror = "*"#:错误指定>
+mysql_async = "*"#:Mysql创建>

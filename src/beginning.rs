@@ -7,6 +7,7 @@ use compact_str::CompactString;
 use log::{log, Level};
 use FileOperations::local_data;
 use FileOperations::local_data::FileOperation;
+use MysqlOperating::{MysqlServer, AE_EXAM};
 use RedisOperating::RedisServer;
 
 ///初始
@@ -32,8 +33,14 @@ async fn server_setting(e: bool) -> Result<()> {
     match ping().await? {
         (x, y) if x == y && x == true => {
             let x = if e {
+                Master::quote(
+                    AE_EXAM,
+                    Master::get_pool(&TEST_MYSQL.get().unwrap().handle()?),
+                )
+                .await?;
                 SlimeRedis::get_redis(&TEST_REDIS.get().unwrap().handle()?)?
             } else {
+                Master::quote(AE_EXAM, Master::get_pool(&MYSQL.get().unwrap().handle()?)).await?;
                 SlimeRedis::get_redis(&REDIS.get().unwrap().handle()?)?
             };
             REDIS_DIR_INIT.get_or_init(|| x);

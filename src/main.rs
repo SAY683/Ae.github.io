@@ -17,6 +17,7 @@
 分布式存储
 运行前提:>
 注意请确保主机Mysql于Redis运行正常;
+IP静态/或者运行时保持配置的IP相符
 配置:>
 .env:Master节点配置,请确保Master节点设置(数字IP);
 NodSettings:Slave节点配置,不设置/或设置不正常则单机模式;
@@ -30,7 +31,9 @@ slave2/master:副本存储位置;
 slave3/master:副本存储位置;
  */
 pub mod beginning;
+mod database_link;
 pub mod node_data;
+
 pub use crate::node_data::{Master, Slave};
 pub use anyhow::Result;
 use beginning::beginning;
@@ -45,22 +48,22 @@ use std::future::Future;
 use std::net::UdpSocket;
 use std::pin::Pin;
 use tokio::main;
-use MysqlOperating::{MysqlServer, SlimeMysql};
+use MysqlOperating::{MysqlOrm, MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
 
 ///#核心执行
 #[main]
 pub async fn main() -> Result<()> {
-    initialization().await?;
-    run().await?;
-    shut_down().await?;
+    initialization().await.unwrap_or_else(|x| panic!("{}", x));
+    run().await.unwrap_or_else(|x| panic!("{}", x));
+    shut_down().await.unwrap_or_else(|x| panic!("{}", x));
+    println!("{}", TEST_MASTER.get().unwrap().local.ip().to_string());
+    println!("{:?}", &Master::default().orm_database_node().await?);
     return Ok(());
 }
 ///#初始化
 async fn initialization() -> Result<()> {
-    beginning(MODEL)
-        .await
-        .unwrap_or_else(|_| panic!("Initialization Error"));
+    beginning(MODEL).await?;
     return Ok(());
 }
 ///#运行

@@ -28,7 +28,8 @@ chrono = "*"#:Mysql|时间>
 sqlx = { version = "*", features = ["runtime-tokio-native-tls", "postgres", "any", "tls", "runtime-actix-native-tls", "macros", "chrono"] }#:Mysql|查询>
 rbatis = { version = "*" }#:ORM(A)>
 rbdc = "*"#:ORM(B)>
-rbdc-mysql = "*"#:ORM Mysql>
+rbdc-mysql = "*"#:ORM(C)>
+rbs = "*"#ORM(D)>
 rayon = "*"#:微型本地数据库>
 redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager", "r2d2"] }#:Redis|操作>
 deadpool-redis = { version = "*", features = ["serde"] }#:Redis链接>
