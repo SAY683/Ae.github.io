@@ -1,6 +1,6 @@
 # Ae.github.io
 Windos分布存储 
-运行前提:> 
+运行前提:><br>
 注意请确保主机(Master)Mysql于Redis运行正常无法错误; 
 配置:> 
 .env:Master节点配置,请确保(Master)已节点; 
