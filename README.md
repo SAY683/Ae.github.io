@@ -7,7 +7,7 @@
 NodSettings:(Slave)节点配置,不设置则单机模式;<br> 
 MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置,(Master)必须得设置;<br> 
 <h2>错误:></h2><br>
-.env:(Master)配置问题则默认设置<br>
+.env:(Master)配置问题则默认设置{<br>
 IP=127.0.0.1<br>
 PORT=8964<br>
 HDFS=./tmp/hdfs<br> 
