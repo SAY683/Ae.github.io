@@ -13,6 +13,6 @@ PORT=8964<br>
 HDFS=./tmp/hdfs<br> 
 LOGS=./tmp/logs<br>  
 }<br>
-<h2>原理:></h2>...<br>
+<h2>说明:></h2><br>
 <h3>MYSQL在本系统中将担任分布文件聚合处理<br><h3>
 <h1>完成中></h1>>><br>
