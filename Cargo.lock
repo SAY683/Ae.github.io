@@ -29,6 +29,7 @@ dependencies = [
  "datafusion",
  "deadpool",
  "deadpool-redis",
+ "deluge",
  "dotenv",
  "fast_log",
  "flame",
@@ -2069,6 +2070,18 @@ dependencies = [
  "ord_subset",
  "rustc-serialize",
  "serde",
+]
+
+[[package]]
+name = "deluge"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "38b61952a3538af63d80edbaf7fbe3a2a58b00a077406d121894dcf6db47ed01"
+dependencies = [
+ "futures",
+ "num_cpus",
+ "pin-project",
+ "tokio",
 ]
 
 [[package]]

@@ -20,6 +20,7 @@ futures = "*"#:区域执行async/await>
 async-trait = "*"#:async-trait>
 async-channel = "*"#:线程通信>
 async-stream = "*"#:异步迭代>
+deluge = { version = "*", features = ["tokio"] }#:异步流>
 deadpool = { version = "*", features = ["rt_tokio_1", "serde"] }#:通用异步池>
 #async<+>async<+>async<+>async<+>async<+>async<+>async<+>async<+>async<+>
 

@@ -74,6 +74,8 @@ pub trait MysqlOrm {
     async fn orm_database_node(&self) -> Result<Self::Data>;
     ///#插入
     async fn orm_insert(_: Self::Object) -> Result<Self::Object>;
+    //#更新
+    //async fn orm_update(_: &str) -> Result<Self::Object>;
 }
 ///#默认数据表
 #[derive(Hash, Clone, Debug, Serialize, Deserialize)]
