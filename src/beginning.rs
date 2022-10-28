@@ -1,7 +1,8 @@
+use crate::database_link::mysql::StorageLocation;
 use crate::{
     Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, LOCAL_IP, MASTER, MYSQL,
-    MYSQL_VERSION, REDIS, REDIS_DIR_INIT, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL,
-    TEST_REDIS, TEST_SLAVE,
+    MYSQL_DIR_INIT, MYSQL_VERSION, REDIS, REDIS_DIR_INIT, REDIS_VERSION, SLAVE, TEST_MASTER,
+    TEST_MYSQL, TEST_REDIS, TEST_SLAVE,
 };
 use compact_str::CompactString;
 use log::{log, Level};
@@ -32,17 +33,21 @@ pub async fn beginning(e: bool) -> Result<()> {
 async fn server_setting(e: bool) -> Result<()> {
     match ping().await? {
         (x, y) if x == y && x == true => {
-            let x = if e {
-                Master::quote(
-                    AE_EXAM,
-                    Master::get_pool(&TEST_MYSQL.get().unwrap().handle()?),
-                )
-                .await?;
-                SlimeRedis::get_redis(&TEST_REDIS.get().unwrap().handle()?)?
+            //初始数据表
+            Master::quote(
+                AE_EXAM,
+                Master::get_pool(&if e {
+                    TEST_MYSQL.get().unwrap().handle()?
+                } else {
+                    MYSQL.get().unwrap().handle()?
+                }),
+            )
+            .await?;
+            let x = SlimeRedis::get_redis(&if e {
+                TEST_REDIS.get().unwrap().handle()?
             } else {
-                Master::quote(AE_EXAM, Master::get_pool(&MYSQL.get().unwrap().handle()?)).await?;
-                SlimeRedis::get_redis(&REDIS.get().unwrap().handle()?)?
-            };
+                REDIS.get().unwrap().handle()?
+            })?;
             REDIS_DIR_INIT.get_or_init(|| x);
         }
         _ => {
@@ -51,16 +56,14 @@ async fn server_setting(e: bool) -> Result<()> {
     };
     return Ok(());
 }
-///#文件初始
+///#文件初始[crate::beginning::master_init]
 fn file_init(e: bool) -> Result<()> {
     let x = if e {
         (TEST_SLAVE.get().unwrap(), TEST_MASTER.get().unwrap())
     } else {
         (SLAVE.get().unwrap(), MASTER.get().unwrap())
     };
-    if x.0.slave.len() == 0 {
-        master_init(e)?;
-    } else if LOCAL_IP.as_ref().unwrap() == &x.1.local.ip().to_string() {
+    if x.0.slave.len() == 0 || LOCAL_IP.as_ref().unwrap() == &x.1.local.ip().to_string() {
         master_init(e)?;
     } else {
         eprintln!("Node Tis Not Master");
@@ -99,6 +102,7 @@ fn testing() {
     TEST_MYSQL.get_or_init(|| SlimeMysql::default());
     TEST_REDIS.get_or_init(|| SlimeRedis::default());
 }
+///#master初始
 fn master_init(e: bool) -> Result<()> {
     let Master {
         local: _,

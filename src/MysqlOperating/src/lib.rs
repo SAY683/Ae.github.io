@@ -7,7 +7,7 @@ use async_trait::async_trait;
 use core::fmt::Debug;
 use mysql_async::prelude::{Query, Queryable};
 use mysql_async::{Conn as AsyncConn, Pool as AsyncPool};
-use rbatis::{crud, Rbatis};
+use rbatis::{crud, impl_select, Rbatis};
 use rbdc::datetime::FastDateTime;
 use rbdc_mysql::driver::MysqlDriver;
 use serde::{Deserialize, Serialize};
@@ -66,9 +66,14 @@ pub trait MysqlOrm {
         rb.init(MysqlDriver {}, e)?;
         return Ok(rb);
     }
+    type Object;
+    ///#查询全部
+    async fn orm_select() -> Result<Self::Object>;
     type Data;
     ///#节点计算
     async fn orm_database_node(&self) -> Result<Self::Data>;
+    ///#插入
+    async fn orm_insert(_: Self::Object) -> Result<Self::Object>;
 }
 ///#默认数据表
 #[derive(Hash, Clone, Debug, Serialize, Deserialize)]
@@ -86,22 +91,25 @@ pub struct AeExam {
 }
 //依据实现
 crud!(AeExam {});
+//查询名称
+impl_select!(AeExam {select_name(name:&str)=>"`where id = #{name}`"});
+//更新
 ///Ae_Exam创建语句
 pub const AE_EXAM: &str = r"
 create table if not exists ae_exam
 (
-	id bigint(25) not null,
+	id bigint(64) not null,
 	name varchar(1989) not null,
 	hash text null,
 	location longtext null,
 	time datetime null
 );
-create index exam_id_index
+create index ae_exam_id_index
 	on exam (id);
-create unique index exam_name_uindex
+create unique index ae_exam_name_uindex
 	on exam (name);
-alter table exam
-	add constraint exam_pk
+alter table ae_exam
+	add constraint ae_exam_pk
 		primary key (name);
 ";
 ///#错误

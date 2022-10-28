@@ -37,6 +37,7 @@ pub mod node_data;
 pub use crate::node_data::{Master, Slave};
 pub use anyhow::Result;
 use beginning::beginning;
+use database_link::mysql::StorageLocation;
 use deadpool::managed::{Manager, Pool};
 use deadpool_redis::redis::Client;
 use futures::executor::block_on;
@@ -44,6 +45,7 @@ use lazy_static::lazy_static;
 use node_data::SlimeNode;
 use once_cell::sync::OnceCell;
 use r2d2_redis::RedisConnectionManager;
+use rbatis::Rbatis;
 use std::future::Future;
 use std::net::UdpSocket;
 use std::pin::Pin;
@@ -57,8 +59,7 @@ pub async fn main() -> Result<()> {
     initialization().await.unwrap_or_else(|x| panic!("{}", x));
     run().await.unwrap_or_else(|x| panic!("{}", x));
     shut_down().await.unwrap_or_else(|x| panic!("{}", x));
-    println!("{}", TEST_MASTER.get().unwrap().local.ip().to_string());
-    println!("{:?}", &Master::default().orm_database_node().await?);
+    println!("{:?}", &Master::orm_select().await?);
     return Ok(());
 }
 ///#初始化
@@ -106,6 +107,9 @@ lazy_static! {
         let x = UdpSocket::bind("0.0.0.0:0")?;
         x.connect("8.8.8.8:80")?;
         return Ok(x.local_addr()?.ip().to_string());
+    };
+    pub static ref MYSQL_DIR_INIT:Result<Rbatis>={
+        Ok(block_on(StorageLocation::get_mysql::<Master>())?)
     };
 }
 //#相关配置
