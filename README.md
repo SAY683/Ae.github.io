@@ -10,7 +10,7 @@ Mysql支持MariaDB<br>
 <h2>配置:></h2>
 .env:Master节点配置,请确保(Master)已节点;<br>
 NodSettings:(Slave)节点配置,不设置则单机模式;<br> 
-MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置,(Master)必须得设置;<br> 
+MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置(Master)必须得设置;<br> 
 </div>
 <div>
 <h2>错误:></h2>
@@ -26,7 +26,8 @@ MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置,(Master)必须�
 <div>
 <h2>说明:></h2><br>
 <ul>
-<li>MYSQL在本系统中将担任分布文件聚合处理</li>
+<li>Mysql在本系统中将担任分布文件聚合处理</li>
+<li>Redis将处理用户的索引</li>
 </ul>
 </div>
 <h1>完成中->->->></h1>

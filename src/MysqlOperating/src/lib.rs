@@ -12,6 +12,9 @@ use rbdc::datetime::FastDateTime;
 use rbdc_mysql::driver::MysqlDriver;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use uuid::adapter::Urn;
+use uuid::Uuid;
+
 ///#Mysql_Ulr
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SlimeMysql {
@@ -56,7 +59,11 @@ pub trait MysqlServer {
         r.ping().await?;
         return Ok(r.server_version());
     }
+    fn uid() -> String {
+        return Urn::from_uuid(Uuid::new_v4()).to_string();
+    }
 }
+impl MysqlServer for SlimeMysql {}
 ///#查询操作
 #[async_trait]
 pub trait MysqlOrm {
@@ -73,15 +80,16 @@ pub trait MysqlOrm {
     ///#节点计算
     async fn orm_database_node(&self) -> Result<Self::Data>;
     ///#插入
-    async fn orm_insert(_: Self::Object) -> Result<Self::Object>;
-    //#更新
-    //async fn orm_update(_: &str) -> Result<Self::Object>;
+    async fn orm_insert(_: Self::Object) -> Result<()>;
+    type DataTable;
+    ///#更新
+    async fn orm_update(_: Self::DataTable, _: String) -> Result<Self::DataTable>;
 }
 ///#默认数据表
 #[derive(Hash, Clone, Debug, Serialize, Deserialize)]
 pub struct AeExam {
-    //其他时间表接口
-    pub id: usize,
+    //其他时间表接口 Option特殊情况不用写
+    pub id: Option<String>,
     //分布式虚拟文件名称
     pub name: String,
     //hash文件验证值
@@ -91,16 +99,36 @@ pub struct AeExam {
     //时间记录
     pub time: Option<FastDateTime>,
 }
+impl MysqlServer for AeExam {}
 //依据实现
 crud!(AeExam {});
+//查询id
+impl_select!(AeExam {select_id(id:&str)=>"where id = #{name}"});
 //查询名称
-impl_select!(AeExam {select_name(name:&str)=>"`where id = #{name}`"});
+impl_select!(AeExam{select_name(name:&str)=>"where name = #{name}"});
 //更新
+///#错误
+#[derive(Debug, Error)]
+pub enum AeMysqlError<'life> {
+    ///初始化异常
+    #[error("INITIALIZATION_EXCEPTION")]
+    Initialization,
+    ///链接异常
+    #[error("INITIALIZATION[IP:{ip:?}|Error:{error:?}]")]
+    Link { ip: String, error: String },
+    ///#列表错误
+    #[error("AListOfErrors{a:?}|{b:?}")]
+    AListOfErrors { a: i64, b: i64 },
+    ///未知因此
+    #[error("UNKNOWN-SO:{0}")]
+    Unknown(&'life str),
+}
+
 ///Ae_Exam创建语句
 pub const AE_EXAM: &str = r"
 create table if not exists ae_exam
 (
-	id bigint(64) not null,
+	id varchar(1989) not null,
 	name varchar(1989) not null,
 	hash text null,
 	location longtext null,
@@ -114,16 +142,3 @@ alter table ae_exam
 	add constraint ae_exam_pk
 		primary key (name);
 ";
-///#错误
-#[derive(Debug, Error)]
-pub enum AeMysqlError<'life> {
-    ///初始化异常
-    #[error("INITIALIZATION_EXCEPTION")]
-    Initialization,
-    ///链接异常
-    #[error("INITIALIZATION[IP:{ip:?}|Error:{error:?}]")]
-    Link { ip: String, error: String },
-    ///未知因此
-    #[error("UNKNOWN-SO:{0}")]
-    Unknown(&'life str),
-}

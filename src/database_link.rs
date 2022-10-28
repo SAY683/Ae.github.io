@@ -7,6 +7,7 @@ pub mod mysql {
     use serde::{Deserialize, Serialize};
     use MysqlOperating::{AeExam, MysqlOrm, MysqlServer};
     use PropertyMacro::MysqlServer;
+    use RedisOperating::RedisServerPoll;
 
     ///#存储位置 master不会直接存储文件
     #[derive(Debug, Serialize, Deserialize, MysqlServer)]
@@ -43,12 +44,59 @@ pub mod mysql {
                 })
                 .collect());
         }
-        async fn orm_insert(e: Self::Object) -> Result<Self::Object> {
+        ///#async fn orm_insert(e: Self::Object) -> Result<Self::Object>
+        ///#type Object = Vec<AeExam>;
+        ///[Master::get_redis_set]
+        async fn orm_insert(e: Self::Object) -> Result<()> {
             let mut x = MYSQL_DIR_INIT.as_ref().unwrap();
-            for i in e.iter() {
-                AeExam::insert(&mut x, i).await?;
+            let mut r = Vec::new();
+            for i in e.into_iter() {
+                AeExam::insert(&mut x, &i).await?;
+                r.push((i.name.to_string(), i.id.unwrap().as_str().to_string()));
             }
-            return Ok(e);
+            Master::get_redis_set(&r).await?;
+            return Ok(());
+        }
+        type DataTable = AeExam;
+        ///#name/id r=name
+        ///#AeExam ID = None
+        async fn orm_update(e: Self::DataTable, r: String) -> Result<Self::DataTable> {
+            let mut x = MYSQL_DIR_INIT.as_ref().unwrap();
+            let v = AeExam {
+                id: Some(Master::get_redis_get(&r).await?),
+                ..e
+            };
+            //查询
+            AeExam::update_by_column(&mut x, &v, "id").await?;
+            return Ok(v);
+        }
+    }
+}
+pub mod redis {
+    use crate::node_data::Master;
+    use crate::REDIS_DIR_INIT;
+    use async_trait::async_trait;
+    use deadpool_redis::redis::cmd;
+    use RedisOperating::RedisServerPoll;
+    #[async_trait]
+    impl RedisServerPoll for Master {
+        type Data = Vec<String>;
+        ///#async fn get_redis_set(e: &Vec<(String, String)>) -> anyhow::Result<Self::Data>
+        async fn get_redis_set(e: &Vec<(String, String)>) -> anyhow::Result<Self::Data> {
+            let mut z = REDIS_DIR_INIT
+                .as_ref()
+                .unwrap()
+                .get_async_connection()
+                .await?;
+            for (x, y) in e.iter() {
+                cmd("SET").arg(x).arg(y).query_async(&mut z).await?;
+            }
+            return Ok(vec![]);
+        }
+        ///#async fn get_redis_get(e: &Vec<(String, String)>) -> anyhow::Result<Self::Data>
+        async fn get_redis_get(e: &String) -> anyhow::Result<String> {
+            let mut z = REDIS_DIR_INIT.as_ref().unwrap().get_connection()?;
+            return Ok(cmd("GET").arg(e).query::<String>(&mut z)?);
         }
     }
 }

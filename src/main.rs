@@ -13,23 +13,6 @@
     type_ascription,
     never_type
 )]
-/*
-分布式存储
-运行前提:>
-注意请确保主机Mysql于Redis运行正常;
-IP静态/或者运行时保持配置的IP相符
-配置:>
-.env:Master节点配置,请确保Master节点设置(数字IP);
-NodSettings:Slave节点配置,不设置/或设置不正常则单机模式;
-MysqlPosixSettings/RedisPosixSettings:Mysql与Redis链接配置,Master必须得设置;
-错误:>
-.env:Master配置问题则默认设置
-原理:>
-请基本保持有2-3台节点=======
-slave1:守护节点(副本)由此处理;
-slave2/master:副本存储位置;
-slave3/master:副本存储位置;
- */
 pub mod beginning;
 mod database_link;
 pub mod node_data;
@@ -50,7 +33,7 @@ use std::future::Future;
 use std::net::UdpSocket;
 use std::pin::Pin;
 use tokio::main;
-use MysqlOperating::{MysqlOrm, MysqlServer, SlimeMysql};
+use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
 
 ///#核心执行
@@ -59,7 +42,6 @@ pub async fn main() -> Result<()> {
     initialization().await.unwrap_or_else(|x| panic!("{}", x));
     run().await.unwrap_or_else(|x| panic!("{}", x));
     shut_down().await.unwrap_or_else(|x| panic!("{}", x));
-    println!("{:?}", &Master::orm_select().await?);
     return Ok(());
 }
 ///#初始化
@@ -108,8 +90,20 @@ lazy_static! {
         x.connect("8.8.8.8:80")?;
         return Ok(x.local_addr()?.ip().to_string());
     };
+    //#链接池mysql
     pub static ref MYSQL_DIR_INIT:Result<Rbatis>={
         Ok(block_on(StorageLocation::get_mysql::<Master>())?)
+    };
+    //#链接池deadpool_redis
+    pub static ref REDIS_DIR_INIT:Result<Client>={
+        Ok(SlimeRedis::get_redis(&if MODEL {
+                TEST_REDIS.get().unwrap().handle()?
+            } else {
+                REDIS.get().unwrap().handle()?
+            })?)
+    };
+    pub static ref ID:String={
+        Master::uid()
     };
 }
 //#相关配置
@@ -136,5 +130,3 @@ pub struct AsyncDriver<'life, Rx: Sized>(
 );
 ///#异步池[async_trait]实现注意
 pub struct AsynchronousPool<G: Sized + Manager>(pub Pool<G>);
-///#链接池deadpool_redis
-pub static REDIS_DIR_INIT: OnceCell<Client> = OnceCell::new();

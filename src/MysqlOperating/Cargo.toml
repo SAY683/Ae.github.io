@@ -13,8 +13,10 @@ fast_log = "*"#:log(B)>
 rbatis = { version = "*" }#:ORM(A)>
 rbdc = "*"#:ORM(B)>
 rbdc-mysql = "*"#:ORM(C)>
-rbs="*"#ORM(D)>
+rbs = "*"#ORM(D)>
 async-trait = "*"#:async-trait>
 anyhow = "*"#:Resultj兼容处理>
 thiserror = "*"#:错误指定>
 mysql_async = "*"#:Mysql创建>
+uuid = { version = "*", features = ["serde", "v4", "v5"] }#:ID>
+hashbrown = "*"#:|哈希(性能)>

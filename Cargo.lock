@@ -123,6 +123,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "fast_log",
+ "hashbrown",
  "log",
  "mysql_async",
  "rbatis",
@@ -132,6 +133,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+ "uuid 0.7.4",
 ]
 
 [[package]]
@@ -148,10 +150,12 @@ dependencies = [
 name = "RedisOperating"
 version = "0.1.0"
 dependencies = [
+ "MysqlOperating",
  "anyhow",
  "async-trait",
  "deadpool-redis",
  "fast_log",
+ "hashbrown",
  "log",
  "r2d2_redis",
  "redis 0.22.1",
@@ -7137,6 +7141,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90dbc611eb48397705a6b0f6e917da23ae517e4d127123d2cf7674206627d32a"
 dependencies = [
  "rand 0.6.5",
+ "serde",
+ "sha1 0.6.1",
 ]
 
 [[package]]

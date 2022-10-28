@@ -4,11 +4,13 @@ Redis操作
  */
 use anyhow::Result;
 use async_trait::async_trait;
-use deadpool_redis::redis::{cmd, Client, ConnectionLike};
+use deadpool_redis::redis::{Client, ConnectionLike};
 use deadpool_redis::{Config as PoolConfig, Connection as ConnectionDesc, Pool as PoolC, Runtime};
 use r2d2_redis::r2d2::Pool;
 use r2d2_redis::RedisConnectionManager;
 use serde::{Deserialize, Serialize};
+use MysqlOperating::MysqlOrm;
+
 ///#Redis_Ulr
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SlimeRedis {
@@ -51,7 +53,7 @@ pub trait RedisServer {
 ///#查询池
 ///#默认Default Pool<RedisConnectionManager>> (r2d2)
 #[async_trait]
-pub trait RedisServerPoll<T: Sized>: RedisServer + Sized {
+pub trait RedisServerPoll: Sized {
     ///#database get Config
     fn get_redis_con(e: &str) -> PoolConfig {
         return PoolConfig::from_url(e);
@@ -64,21 +66,10 @@ pub trait RedisServerPoll<T: Sized>: RedisServer + Sized {
     async fn get_redis_con_async(e: PoolC) -> Result<ConnectionDesc> {
         return Ok(e.get().await?);
     }
-    ///#参数
-    type Arg;
-    ///#结果
     type Data;
-    ///#fn get_redis_cmd(&self, _: &T, _: Self::Arg) -> Result<Self::Data>;
-    async fn get_redis_cmd(&self, _: T, _: Self::Arg) -> Result<Self::Data>;
+    ///#async fn get_redis_set(_: HashMap<String, String>) -> Result<Self::Data>;
+    async fn get_redis_set(_: &Vec<(String, String)>) -> Result<Self::Data>;
+    ///#async fn get_redis_get(_: &HashSet<(String, String)>)->Result<Self::Data>;
+    async fn get_redis_get(_: &String) -> Result<String>;
 }
 impl RedisServer for SlimeRedis {}
-#[async_trait]
-impl RedisServerPoll<Client> for SlimeRedis {
-    type Arg = ();
-    type Data = ();
-    async fn get_redis_cmd(&self, e: Client, _: Self::Arg) -> Result<Self::Data> {
-        let mut x = e.get_connection()?;
-        let _ = cmd("").query::<String>(&mut x);
-        return Ok(());
-    }
-}

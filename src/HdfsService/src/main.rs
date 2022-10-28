@@ -13,16 +13,18 @@
 /*
 存储HDFS
  */
-use std::mem::ManuallyDrop;
-use MysqlOperating::MysqlServer;
-use RedisOperating::RedisServer;
-
 pub fn main() {}
-pub union Service<R: Sized, G: Sized>
-where
-    R: MysqlServer,
-    G: RedisServer,
-{
-    pub mysql: ManuallyDrop<R>,
-    pub redis: ManuallyDrop<G>,
+pub mod useless {
+    use std::mem::ManuallyDrop;
+    use MysqlOperating::MysqlServer;
+    use RedisOperating::RedisServer;
+
+    pub union ServiceEc<R: Sized, G: Sized>
+    where
+        R: MysqlServer,
+        G: RedisServer,
+    {
+        pub mysql: ManuallyDrop<R>,
+        pub redis: ManuallyDrop<G>,
+    }
 }

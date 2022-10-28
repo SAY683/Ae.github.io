@@ -15,3 +15,5 @@ log = { version = "*", features = ["std", "serde"] }#:log(A)>
 fast_log = "*"#:log(B)>
 async-trait = "*"#:async-trait>
 anyhow = "*"#:Resultj兼容处理>
+hashbrown = "*"#:|哈希(性能)>
+MysqlOperating = { path = "../MysqlOperating" }

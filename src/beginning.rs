@@ -1,15 +1,12 @@
-use crate::database_link::mysql::StorageLocation;
 use crate::{
     Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, LOCAL_IP, MASTER, MYSQL,
-    MYSQL_DIR_INIT, MYSQL_VERSION, REDIS, REDIS_DIR_INIT, REDIS_VERSION, SLAVE, TEST_MASTER,
-    TEST_MYSQL, TEST_REDIS, TEST_SLAVE,
+    MYSQL_VERSION, REDIS, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL, TEST_REDIS, TEST_SLAVE,
 };
 use compact_str::CompactString;
 use log::{log, Level};
 use FileOperations::local_data;
 use FileOperations::local_data::FileOperation;
 use MysqlOperating::{MysqlServer, AE_EXAM};
-use RedisOperating::RedisServer;
 
 ///初始
 pub async fn beginning(e: bool) -> Result<()> {
@@ -43,12 +40,6 @@ async fn server_setting(e: bool) -> Result<()> {
                 }),
             )
             .await?;
-            let x = SlimeRedis::get_redis(&if e {
-                TEST_REDIS.get().unwrap().handle()?
-            } else {
-                REDIS.get().unwrap().handle()?
-            })?;
-            REDIS_DIR_INIT.get_or_init(|| x);
         }
         _ => {
             panic!("Basic configuration error")
