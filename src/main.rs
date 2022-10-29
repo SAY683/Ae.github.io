@@ -15,6 +15,7 @@
 )]
 pub mod beginning;
 mod database_link;
+mod hdfs_service;
 pub mod node_data;
 
 pub use crate::node_data::{Master, Slave};
@@ -32,6 +33,7 @@ use rbatis::Rbatis;
 use std::future::Future;
 use std::net::UdpSocket;
 use std::pin::Pin;
+use std::sync::atomic::AtomicBool;
 use tokio::main;
 use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
@@ -130,3 +132,7 @@ pub struct AsyncDriver<'life, Rx: Sized>(
 );
 ///#异步池[async_trait]实现注意
 pub struct AsynchronousPool<G: Sized + Manager>(pub Pool<G>);
+///#节点模式 true集群 默认本机
+pub static THE_NODE_MODEL: AtomicBool = AtomicBool::new(false);
+///#是否是 master节点 默认是master
+pub static MASTER_MODEL: AtomicBool = AtomicBool::new(true);

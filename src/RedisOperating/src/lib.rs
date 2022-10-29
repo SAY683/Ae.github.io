@@ -9,7 +9,6 @@ use deadpool_redis::{Config as PoolConfig, Connection as ConnectionDesc, Pool as
 use r2d2_redis::r2d2::Pool;
 use r2d2_redis::RedisConnectionManager;
 use serde::{Deserialize, Serialize};
-use MysqlOperating::MysqlOrm;
 
 ///#Redis_Ulr
 #[derive(Debug, Serialize, Deserialize)]
@@ -70,6 +69,11 @@ pub trait RedisServerPoll: Sized {
     ///#async fn get_redis_set(_: HashMap<String, String>) -> Result<Self::Data>;
     async fn get_redis_set(_: &Vec<(String, String)>) -> Result<Self::Data>;
     ///#async fn get_redis_get(_: &HashSet<(String, String)>)->Result<Self::Data>;
-    async fn get_redis_get(_: &String) -> Result<String>;
+    async fn get_redis_get(_: &String) -> Result<Option<String>>;
+    ///#async fn get_redis_remove(_: &String) -> Result<()>;
+    async fn get_redis_remove(_: &String) -> Result<()>;
 }
+///#RedisHdfs
+#[async_trait]
+pub trait RedisHdfsDatabaseDriver {}
 impl RedisServer for SlimeRedis {}

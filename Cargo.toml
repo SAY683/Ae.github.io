@@ -26,16 +26,13 @@ deadpool = { version = "*", features = ["rt_tokio_1", "serde"] }#:通用异步�
 
 #database<+>database<+>database<+>database<+>database<+>database<+>database<+>
 chrono = "*"#:Mysql|时间>
-sqlx = { version = "*", features = ["runtime-tokio-native-tls", "postgres", "any", "tls", "runtime-actix-native-tls", "macros", "chrono"] }#:Mysql|查询>
-rbatis = { version = "*" }#:ORM(A)>
-rbdc = "*"#:ORM(B)>
-rbdc-mysql = "*"#:ORM(C)>
-rbs = "*"#ORM(D)>
+rbatis = { version = "*" }#:ORM(A)Mysql>
+rbdc = "*"#:ORM(B)Mysql>
+rbdc-mysql = "*"#:ORM(C)Mysql>
+rbs = "*"#ORM(D)Mysql>
 rayon = "*"#:微型本地数据库>
-redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager", "r2d2"] }#:Redis|操作>
 deadpool-redis = { version = "*", features = ["serde"] }#:Redis链接>
-r2d2_redis = "*"#redis链接池>
-r2d2 = "*"#:Redis链接池>
+r2d2_redis = "*"#redis链接池池_兼容用>
 #database<+>database<+>database<+>database<+>database<+>database<+>database<+>
 
 #serialization<+>serialization<+>serialization<+>serialization<+>serialization<+>
@@ -112,10 +109,9 @@ FileOperations = { path = "./src/FileOperations" }
 MysqlOperating = { path = "./src/MysqlOperating" }
 RedisOperating = { path = "./src/RedisOperating" }
 PropertyMacro = { path = "./src/PropertyMacro" }
-HdfsService = { path = "./src/HdfsService" }
 #NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>
 [workspace]#[集中构建]
-members = ["src/PropertyMacro", "src/ExternalInterface", "src/GuiInterface", "src/FileOperations", "src/MysqlOperating", "src/RedisOperating", "src/HdfsService"]
+members = ["src/PropertyMacro", "src/ExternalInterface", "src/GuiInterface", "src/FileOperations", "src/MysqlOperating", "src/RedisOperating"]
 [lib]#[高可用库]
 path = "./src/main.rs"
 [profile.dev]#[DEBUG]

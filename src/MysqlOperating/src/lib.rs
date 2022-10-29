@@ -84,6 +84,12 @@ pub trait MysqlOrm {
     type DataTable;
     ///#更新
     async fn orm_update(_: Self::DataTable, _: String) -> Result<Self::DataTable>;
+    ///#删除
+    async fn orm_remove(_: String) -> Result<()>;
+}
+///#MysqlHdfs
+#[async_trait]
+pub trait MysqlHdfsDatabaseDriver {
 }
 ///#默认数据表
 #[derive(Hash, Clone, Debug, Serialize, Deserialize)]
@@ -133,7 +139,7 @@ create table if not exists ae_exam
 	hash text null,
 	location longtext null,
 	time datetime null
-);
+)engine=InnoDB,charset=utf8mb4;
 create index ae_exam_id_index
 	on exam (id);
 create unique index ae_exam_name_uindex

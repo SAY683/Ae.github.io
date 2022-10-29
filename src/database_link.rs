@@ -61,14 +61,32 @@ pub mod mysql {
         ///#name/id r=name
         ///#AeExam ID = None
         async fn orm_update(e: Self::DataTable, r: String) -> Result<Self::DataTable> {
-            let mut x = MYSQL_DIR_INIT.as_ref().unwrap();
             let v = AeExam {
-                id: Some(Master::get_redis_get(&r).await?),
+                id: Some(Master::get_redis_get(&r).await?.unwrap_or_else(|| {
+                    eprintln!("Redis Is None");
+                    String::new()
+                })),
                 ..e
             };
             //查询
-            AeExam::update_by_column(&mut x, &v, "id").await?;
+            AeExam::update_by_column(&mut MYSQL_DIR_INIT.as_ref().unwrap(), &v, "id").await?;
             return Ok(v);
+        }
+        ///#删除where r
+        async fn orm_remove(r: String) -> Result<()> {
+            AeExam::delete_by_column(
+                &mut MYSQL_DIR_INIT.as_ref().unwrap(),
+                "id",
+                Master::get_redis_get(&r)
+                    .await?
+                    .unwrap_or_else(|| {
+                        eprintln!("Redis Is None");
+                        String::new()
+                    })
+                    .as_str(),
+            )
+            .await?;
+            return Ok(Master::get_redis_remove(&r).await?);
         }
     }
 }
@@ -93,10 +111,24 @@ pub mod redis {
             }
             return Ok(vec![]);
         }
-        ///#async fn get_redis_get(e: &Vec<(String, String)>) -> anyhow::Result<Self::Data>
-        async fn get_redis_get(e: &String) -> anyhow::Result<String> {
-            let mut z = REDIS_DIR_INIT.as_ref().unwrap().get_connection()?;
-            return Ok(cmd("GET").arg(e).query::<String>(&mut z)?);
+        ///#async fn get_redis_get(e: &String) -> anyhow::Result<Option<String>>
+        async fn get_redis_get(e: &String) -> anyhow::Result<Option<String>> {
+            return Ok(cmd("GET").arg(e).query::<Option<String>>(
+                &mut REDIS_DIR_INIT.as_ref().unwrap().get_connection()?,
+            )?);
+        }
+        ///#async fn get_redis_remove(e: &String) -> anyhow::Result<()>
+        async fn get_redis_remove(e: &String) -> anyhow::Result<()> {
+            return Ok(cmd("DEL")
+                .arg(e)
+                .query_async(
+                    &mut REDIS_DIR_INIT
+                        .as_ref()
+                        .unwrap()
+                        .get_async_connection()
+                        .await?,
+                )
+                .await?);
         }
     }
 }
