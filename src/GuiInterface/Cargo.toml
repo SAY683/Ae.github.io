@@ -6,6 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iced = "*"#:|界面>
+tui = "*"#:shell界面(A)>
+crossterm = "*"#:shell界面(B)>
+comfy-table = "*"#:Shll界面>
+symphonia = { version = "*", features = ["symphonia-format-isomp4", "symphonia-bundle-mp3"] }#:音频>
+clap = "*"#:Shll命令解析>
 [lib]
 path="./src/main.rs"

@@ -12,7 +12,7 @@ use rbdc::datetime::FastDateTime;
 use rbdc_mysql::driver::MysqlDriver;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use uuid::adapter::Urn;
+use uuid::fmt::Urn;
 use uuid::Uuid;
 
 ///#Mysql_Ulr
@@ -89,8 +89,7 @@ pub trait MysqlOrm {
 }
 ///#MysqlHdfs
 #[async_trait]
-pub trait MysqlHdfsDatabaseDriver {
-}
+pub trait MysqlHdfsDatabaseDriver {}
 ///#默认数据表
 #[derive(Hash, Clone, Debug, Serialize, Deserialize)]
 pub struct AeExam {

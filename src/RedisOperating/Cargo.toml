@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 serde = { version = "*", features = ["derive"] }#:数据序列>
 serde_json = "*"#:json序列>
+serde_dynamo = { version = "*", features = ["__aws_sdk_dynamodb_0_19", "__aws_lambda_events_0_7", "__rusoto_core_0_48_crate"] }#:dynamo解析>
 r2d2_redis = "*"#redis链接池>
 redis = { version = "*", features = ["tokio-comp", "tokio-native-tls-comp", "cluster", "connection-manager", "r2d2"] }#:Redis|操作>
 deadpool-redis = { version = "*", features = ["serde"] }#:Redis链接>

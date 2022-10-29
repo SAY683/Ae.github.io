@@ -38,7 +38,8 @@ r2d2_redis = "*"#redis链接池池_兼容用>
 #serialization<+>serialization<+>serialization<+>serialization<+>serialization<+>
 serde = { version = "*", features = ["derive"] }#:数据序列>
 serde_json = "*"#:json序列>
-serde_yaml = "*"#:yaml序列>
+serde_dynamo = { version = "*", features = ["__aws_sdk_dynamodb_0_19", "__aws_lambda_events_0_7", "__rusoto_core_0_48_crate"] }#:dynamo解析>
+flexbuffers = "*"#:
 data-encoding = "*"#:数据编码>
 combine = "*"#:数据解析>
 dotenv = "*"#:环境解析>
@@ -79,11 +80,12 @@ whoami = "*"#:环境ID>
 
 #network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>
 nats = "*"#:NATS>
-rustls = "*"#:TLS>
 quinn = "*"#:QUIC>
+nntp = "*"#:NNTP>
 uuid = "*"#:ID
 http = "*"#:请求处理>
 reqwest = { version = "*", features = ["json", "socks", "stream", "blocking"] }#:http处理[单线程阻塞]>
+webpki-roots = "*"#:TLS证书>
 tokio-rustls = "*"#:AsyncTLS>
 #network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>
 

@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 libloading = "*"#:C++_FFL>
 jni = "*"#:java_Fll>
+ssh-rs = "*"#:ssh>
 #+++++++++++++++build+++++++++++++++++++++++
 [lib]
 crate-type = ["cdylib", "staticlib", "rlib"]
