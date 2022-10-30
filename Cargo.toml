@@ -111,9 +111,11 @@ FileOperations = { path = "./src/FileOperations" }
 MysqlOperating = { path = "./src/MysqlOperating" }
 RedisOperating = { path = "./src/RedisOperating" }
 PropertyMacro = { path = "./src/PropertyMacro" }
+ExternalInterface = { path = "./src/ExternalInterface" }
+HdfsService = { path = "./src/HdfsService" }
 #NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>
 [workspace]#[集中构建]
-members = ["src/PropertyMacro", "src/ExternalInterface", "src/GuiInterface", "src/FileOperations", "src/MysqlOperating", "src/RedisOperating"]
+members = ["src/PropertyMacro", "src/ExternalInterface", "src/GuiInterface", "src/FileOperations", "src/MysqlOperating", "src/RedisOperating", "src/HdfsService"]
 [lib]#[高可用库]
 path = "./src/main.rs"
 [profile.dev]#[DEBUG]

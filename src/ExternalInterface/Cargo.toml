@@ -8,7 +8,6 @@ edition = "2021"
 [dependencies]
 libloading = "*"#:C++_FFL>
 jni = "*"#:java_Fll>
-ssh-rs = "*"#:ssh>
 #+++++++++++++++build+++++++++++++++++++++++
 [lib]
 crate-type = ["cdylib", "staticlib", "rlib"]
@@ -21,4 +20,6 @@ opt-level = 3
 codegen-units = 1
 strip = true
 lto = true
-
+[target.'cfg(target_os = "linux")'.dependencies]
+cpython = "*"#:python(Liunx)>
+ssh-rs = "*"#:SHH(Liunx)>
