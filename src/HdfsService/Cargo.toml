@@ -1,0 +1,24 @@
+[package]
+name = "HdfsService"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+[lib]#[高可用库]
+path = "./src/main.rs"
+crate-type = ["cdylib", "staticlib", "rlib"]
+[profile.dev]#[DEBUG]
+codegen-units = 64
+[profile.release]#[Release]
+opt-level = 3
+codegen-units = 1
+strip = true
+lto = true
+[profile.release.build-override]
+opt-level = 3
+codegen-units = 1
+strip = true
+[target.'cfg(target_os = "linux")'.dependencies]
+hdfs = "*"#:Hdfs>
