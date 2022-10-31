@@ -33,12 +33,14 @@ use r2d2_redis::RedisConnectionManager;
 use rbatis::Rbatis;
 use std::future::Future;
 use std::net::UdpSocket;
+use std::path::Path;
 use std::pin::Pin;
 use std::sync::atomic::AtomicBool;
-use tokio::main;
+use tokio::{main, spawn};
 use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
 use deluge::Iter;
+use s2n_quic::Server;
 
 ///#核心执行
 #[main]
@@ -57,6 +59,23 @@ async fn initialization() -> Result<()> {
 
 ///#运行
 async fn run() -> Result<()> {
+	let mut server = Server::builder().with_tls((Path::new("./Pme/cert.pem"), Path::new("./Pme/key.pem"))).unwrap().with_io("127.0.0.1:4433").unwrap().start().unwrap();
+	while let Some(mut conn) = server.accept().await {
+		// spawn a new task for the connection
+		spawn(async move {
+			eprintln!("Connection accepted from {:?}", conn.remote_addr());
+			while let Ok(Some(mut stream)) = conn.accept_bidirectional_stream().await {
+				// spawn a new task for the stream
+				spawn(async move {
+					eprintln!("Stream opened from {:?}", stream.connection().remote_addr());
+					// echo any data back to the stream
+					while let Ok(Some(data)) = stream.receive().await {
+						stream.send(data).await.expect("stream should be open");
+					}
+				});
+			}
+		});
+	}
 	return Ok(());
 }
 

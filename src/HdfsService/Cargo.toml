@@ -12,6 +12,7 @@ actix-rt = "*"#:WebC>
 anyhow = "*"#:Resultj兼容处理>
 thiserror = "*"#:错误指定>
 serde = { version = "*", features = ["derive"] }#:数据序列>
+s2n-quic = {version = "*",features=["provider-event-tracing"]}#QUIC>
 [lib]#[高可用库]
 path = "./src/main.rs"
 crate-type = ["cdylib", "staticlib", "rlib"]

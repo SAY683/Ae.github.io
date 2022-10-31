@@ -119,6 +119,7 @@ dependencies = [
  "actix-web",
  "anyhow",
  "hdfs",
+ "s2n-quic",
  "serde",
  "ssh-rs",
  "thiserror",
@@ -4584,6 +4585,7 @@ dependencies = [
  "once_cell",
  "s2n-codec",
  "subtle",
+ "tracing",
  "zerocopy",
  "zerocopy-derive",
 ]
