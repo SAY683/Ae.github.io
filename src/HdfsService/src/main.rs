@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{PathBuf};
 use actix_web::main;
 use anyhow::Result;
 
@@ -9,8 +9,8 @@ async fn main() -> Result<()> {
 
 ///#密钥
 pub struct SAR {
-	pub cert: Path,
-	pub key: Path,
+	pub cert: PathBuf,
+	pub key: PathBuf,
 }
 
 ///#HTTP通信 可能的链接方式

@@ -1,12 +1,15 @@
 use std::net::SocketAddr;
+use std::path::{PathBuf};
 use std::sync::Arc;
 use crate::{Master, Slave, SlimeNode, LOCAL_IP, MASTER_MODEL, MODEL, THE_NODE_MODEL};
 use std::sync::atomic::Ordering;
 use parking_lot::RwLock;
 use s2n_quic::{Server, Client};
 use tokio::net::{TcpStream, UdpSocket};
+use ::HdfsService::SAR;
 use MysqlOperating::MysqlHdfsDatabaseDriver;
 use RedisOperating::RedisHdfsDatabaseDriver;
+use FileOperations::condition::system_environment::SlimeEnvironment;
 
 ///#Hdfs
 pub struct HdfsManager {
@@ -148,3 +151,12 @@ pub mod hdfs_service {
 	}
 }
 
+impl SlimeNode for SAR {
+	fn new() -> anyhow::Result<Self> {
+		return Ok(SAR { cert: PathBuf::from(Master::local_path("CERT")?), key: PathBuf::from(Master::local_path("KEY")?) });
+	}
+	type Data = ();
+	fn handle(&self) -> anyhow::Result<Self::Data> {
+		todo!()
+	}
+}
