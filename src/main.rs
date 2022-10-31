@@ -1,18 +1,19 @@
 #![feature(
-    arbitrary_enum_discriminant,
-    type_alias_impl_trait,
-    atomic_from_mut,
-    inline_const,
-    const_mut_refs,
-    associated_type_defaults,
-    array_zip,
-    box_syntax,
-    let_chains,
-    unboxed_closures,
-    async_closure,
-    type_ascription,
-    never_type
+arbitrary_enum_discriminant,
+type_alias_impl_trait,
+atomic_from_mut,
+inline_const,
+const_mut_refs,
+associated_type_defaults,
+array_zip,
+box_syntax,
+let_chains,
+unboxed_closures,
+async_closure,
+type_ascription,
+never_type
 )]
+
 pub mod beginning;
 mod database_link;
 mod hdfs_service;
@@ -37,27 +38,31 @@ use std::sync::atomic::AtomicBool;
 use tokio::main;
 use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
+use deluge::Iter;
 
 ///#核心执行
 #[main]
 pub async fn main() -> Result<()> {
-    initialization().await.unwrap_or_else(|x| panic!("{}", x));
-    run().await.unwrap_or_else(|x| panic!("{}", x));
-    shut_down().await.unwrap_or_else(|x| panic!("{}", x));
-    return Ok(());
+	initialization().await.unwrap_or_else(|x| panic!("{}", x));
+	run().await.unwrap_or_else(|x| panic!("{}", x));
+	shut_down().await.unwrap_or_else(|x| panic!("{}", x));
+	return Ok(());
 }
+
 ///#初始化
 async fn initialization() -> Result<()> {
-    beginning(MODEL).await?;
-    return Ok(());
+	beginning(MODEL).await?;
+	return Ok(());
 }
+
 ///#运行
 async fn run() -> Result<()> {
-    return Ok(());
+	return Ok(());
 }
+
 ///#关闭
 async fn shut_down() -> Result<()> {
-    return Ok(());
+	return Ok(());
 }
 lazy_static! {
     //ping mysql联通性返回
@@ -126,12 +131,18 @@ pub const NODE_INIT: [&str; 2] = [".", "NodeSettings.json"];
 pub const MYSQL_PORT_INIT: [&str; 2] = [".", "MysqlPortSettings.json"];
 ///#Redis数据端口配置
 pub const REDIS_PORT_INIT: [&str; 2] = [".", "RedisPortSettings.json"];
+
 ///#异步闭包
 pub struct AsyncDriver<'life, Rx: Sized>(
-    pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
+	pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
 );
+
 ///#异步池[async_trait]实现注意
 pub struct AsynchronousPool<G: Sized + Manager>(pub Pool<G>);
+
+///#异步迭代器[deluge]实现
+pub struct AsynchronousIterator<G: Sized + IntoIterator>(Iter<G>);
+
 ///#节点模式 true集群 默认本机
 pub static THE_NODE_MODEL: AtomicBool = AtomicBool::new(false);
 ///#是否是 master节点 默认是master

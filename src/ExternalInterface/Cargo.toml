@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 libloading = "*"#:C++_FFL>
 jni = "*"#:java_Fll>
+anyhow = "*"#:Resultj兼容处理>
+thiserror = "*"#:错误指定>
 #+++++++++++++++build+++++++++++++++++++++++
 [lib]
 crate-type = ["cdylib", "staticlib", "rlib"]
@@ -22,4 +24,5 @@ strip = true
 lto = true
 [target.'cfg(target_os = "linux")'.dependencies]
 cpython = "*"#:python(Liunx)>
-ssh-rs = "*"#:SHH(Liunx)>
+j4rs = "*"#:Java
+nats = "*"#:NATS>

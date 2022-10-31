@@ -6,6 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-cors = "*"#:WebA>
+actix-web = "*"#:WebB>
+actix-rt = "*"#:WebC>
+anyhow = "*"#:Resultj兼容处理>
+thiserror = "*"#:错误指定>
+serde = { version = "*", features = ["derive"] }#:数据序列>
 [lib]#[高可用库]
 path = "./src/main.rs"
 crate-type = ["cdylib", "staticlib", "rlib"]
@@ -22,3 +28,4 @@ codegen-units = 1
 strip = true
 [target.'cfg(target_os = "linux")'.dependencies]
 hdfs = "*"#:Hdfs>
+ssh-rs = "*"#:SHH(Liunx)>

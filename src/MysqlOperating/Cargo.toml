@@ -8,7 +8,6 @@ edition = "2021"
 [dependencies]
 serde = { version = "*", features = ["derive"] }#:数据序列>
 serde_json = "*"#:json序列>
-serde_dynamo = { version = "*", features = ["__aws_sdk_dynamodb_0_19", "__aws_lambda_events_0_7", "__rusoto_core_0_48_crate"] }#:dynamo解析>
 log = { version = "*", features = ["std", "serde"] }#:log(A)>
 fast_log = "*"#:log(B)>
 rbatis = { version = "*" }#:ORM(A)>
