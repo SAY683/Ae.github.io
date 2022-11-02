@@ -14,6 +14,11 @@ pub struct SAR {
 }
 
 ///#HTTP通信 可能的链接方式
-pub mod http_server {}
+pub mod http_server {
+	///#http接口
+	pub struct HTTPHickey<'life> {
+		pub home: &'life str,
+	}
+}
 
 pub mod qic_server {}
