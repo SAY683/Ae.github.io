@@ -26,3 +26,11 @@ lto = true
 cpython = "*"#:python(Liunx)>
 j4rs = "*"#:Java
 nats = "*"#:NATS>
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "*", features = [
+    "Data_Xml_Dom",
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_Threading",
+    "Win32_UI_WindowsAndMessaging",
+] }

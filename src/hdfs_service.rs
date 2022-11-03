@@ -153,10 +153,10 @@ pub mod hdfs_service {
 
 impl SlimeNode for SAR {
 	fn new() -> anyhow::Result<Self> {
-		return Ok(SAR { cert: PathBuf::from(Master::local_path("CERT")?), key: PathBuf::from(Master::local_path("KEY")?) });
+		return Ok(SAR { cert: Master::local_path("CERT")?, key: Master::local_path("KEY")? });
 	}
-	type Data = ();
+	type Data = (PathBuf, PathBuf);
 	fn handle(&self) -> anyhow::Result<Self::Data> {
-		todo!()
+		return Ok((PathBuf::from(self.cert.as_str()), PathBuf::from(self.key.as_str())));
 	}
 }

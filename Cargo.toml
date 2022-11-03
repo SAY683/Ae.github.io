@@ -48,6 +48,7 @@ datafusion = "*"#:CSV数据查询>
 #thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>
 kanal = "0.1.0-pre1"#:线程通信Bata>
 thread_local = "*"#:线程通信副本>
+async-backtrace = "*"#:异步线程记录>
 #thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>
 
 #dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>dataInitial<+>

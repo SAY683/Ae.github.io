@@ -33,6 +33,7 @@ use r2d2_redis::RedisConnectionManager;
 use rbatis::Rbatis;
 use std::future::Future;
 use std::net::UdpSocket;
+use async_backtrace::framed;
 use std::pin::Pin;
 use std::sync::atomic::AtomicBool;
 use tokio::{main};
@@ -50,17 +51,20 @@ pub async fn main() -> Result<()> {
 }
 
 ///#初始化
+#[framed]
 async fn initialization() -> Result<()> {
 	beginning(MODEL).await?;
 	return Ok(());
 }
 
 ///#运行
+#[framed]
 async fn run() -> Result<()> {
 	return Ok(());
 }
 
 ///#关闭
+#[framed]
 async fn shut_down() -> Result<()> {
 	return Ok(());
 }
