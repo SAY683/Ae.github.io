@@ -48,6 +48,7 @@ dependencies = [
  "once_cell",
  "opener",
  "parking_lot",
+ "quick-xml",
  "r2d2_redis",
  "rayon",
  "rbatis",
