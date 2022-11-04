@@ -6,7 +6,7 @@
 <ul>
 <li>注意请确保主机(Master)Mysql和Redis运行正常无错误;</li>
 <li>Mysql支持MariaDB</li>
-<li>请确认(master)节点->(slave)节点ssh免密码登录正常</li>
+<li>请确认(master)节点->(slave)节点端口可链接</li>
 </ul>
 </div> 
 <div>
