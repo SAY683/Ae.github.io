@@ -13,6 +13,7 @@ async_closure,
 type_ascription,
 never_type,
 )]
+#![feature(label_break_value)]
 
 pub mod beginning;
 mod database_link;

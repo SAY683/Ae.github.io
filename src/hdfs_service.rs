@@ -129,7 +129,7 @@ pub mod hdfs_service {
 	use async_trait::async_trait;
 	use s2n_quic::Connection;
 	use std::future::{ready, IntoFuture, Ready};
-	use s2n_quic::client::{Connect, ConnectionAttempt};
+	use s2n_quic::client::{Connect};
 	use crate::{MASTER, SETTINGS, TEST_MASTER};
 	
 	///#默认QUI
@@ -171,12 +171,28 @@ pub mod hdfs_service {
 			);
 		}
 		
-		type Client = Option<ConnectionAttempt>;
+		type Client = Option<Connection>;
 		///type Client = Option<Connection>;
 		///async fn client_wait(self) -> Result<Self::Client>
+		///idea的rust插件兼容性问题否则可以
+		///async fn client_wait(&mut self, host_name: &str) -> Result<Self::Client> {
+		///			return Ok(if let Some(x) = HdfsService::the_thread_of_execution(self)? &&let HdfsService::ServiceQUIC { key: _, host } = self{
+		///				let mut x = x.client.connect(Connect::new(host.to_string().as_str().parse::<SocketAddr>()?).with_server_name(host_name)).await?;
+		///			    x.keep_alive(true)?;
+		///				Some(x)
+		///			} else {
+		///				None
+		///			});
+		///		}
 		async fn client_wait(&mut self, host_name: &str) -> Result<Self::Client> {
-			return Ok(if let Some(x) = HdfsService::the_thread_of_execution(self)? && let HdfsService::ServiceQUIC { key: _, host } = self {
-				Some(x.client.connect(Connect::new(host.to_string().as_str().parse:: < SocketAddr>() ? ).with_server_name(host_name)))
+			return Ok(if let Some(x) = HdfsService::the_thread_of_execution(self)? {
+				if let HdfsService::ServiceQUIC { key: _, host } = self {
+					let mut x = x.client.connect(Connect::new(host.to_string().as_str().parse::<SocketAddr>()?).with_server_name(host_name)).await?;
+					x.keep_alive(true)?;
+					Some(x)
+				} else {
+					None
+				}
 			} else {
 				None
 			});
