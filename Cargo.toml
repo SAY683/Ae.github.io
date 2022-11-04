@@ -43,7 +43,7 @@ combine = "*"#:数据解析>
 dotenv = "*"#:环境解析>
 bytes = { version = "*", features = ["serde"] }#:|字节处理>
 datafusion = "*"#:CSV数据查询>
-quick-xml = { version = "*", features = ["serde", "async-tokio"] }#:配置文件>
+quick-xml = { version = "*", features = ["serde", "async-tokio", "serialize"] }#:配置文件>
 #serialization<+>serialization<+>serialization<+>serialization<+>serialization<+>
 
 #thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>thread<+>
@@ -73,6 +73,7 @@ thiserror = "*"#:错误指定>
 walkdir = "*"#:文件查询>
 log = { version = "*", features = ["std", "serde"] }#:log(A)>
 fast_log = "*"#:log(B)>
+ftlog = "*"#log(C)>
 flame = "*"#:测试生成界面>
 opener = "*"#:默认开启>
 whoami = "*"#:环境ID>

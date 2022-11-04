@@ -33,6 +33,7 @@ use r2d2_redis::RedisConnectionManager;
 use rbatis::Rbatis;
 use std::future::Future;
 use std::net::UdpSocket;
+use std::path::PathBuf;
 use async_backtrace::framed;
 use std::pin::Pin;
 use std::sync::atomic::AtomicBool;
@@ -40,6 +41,8 @@ use tokio::{main};
 use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
 use deluge::Iter;
+use FileOperations::program_file_setup::{ApplicationSettings, Setting};
+use crate::beginning::beginning_log;
 
 ///#核心执行
 #[main]
@@ -53,7 +56,10 @@ pub async fn main() -> Result<()> {
 ///#初始化
 #[framed]
 async fn initialization() -> Result<()> {
-	beginning(MODEL).await?;
+	let x = ApplicationSettings::new()?.handle()?;
+	SETTINGS.get_or_init(|| x);
+	beginning(SETTINGS.get().unwrap().default).await?;
+	beginning_log(SETTINGS.get().unwrap().logs)?;
 	return Ok(());
 }
 
@@ -71,7 +77,7 @@ async fn shut_down() -> Result<()> {
 lazy_static! {
     //ping mysql联通性返回
     pub static ref MYSQL_VERSION: Result<bool> = {
-        if MODEL {
+        if SETTINGS.get().unwrap().default {
             let mut x= block_on(Master::conn(&Master::get_pool(&TEST_MYSQL.get().unwrap().handle()?),))?;
             let r=block_on(Master::ping(&mut x)).is_ok();
             block_on(x.disconnect())?;
@@ -85,7 +91,7 @@ lazy_static! {
     };
     //ping redis联通性返回
     pub static ref REDIS_VERSION: Result<bool>={
-        if MODEL{
+        if SETTINGS.get().unwrap().default{
             Ok(Master::ping_lot(&Master::get_redis(&TEST_REDIS.get().unwrap().handle()?)?)?)
         }else {
             Ok(Master::ping_lot(&Master::get_redis(&REDIS.get().unwrap().handle()?)?)?)
@@ -107,7 +113,7 @@ lazy_static! {
     };
     //#链接池deadpool_redis
     pub static ref REDIS_DIR_INIT:Result<Client>={
-        Ok(SlimeRedis::get_redis(&if MODEL {
+        Ok(SlimeRedis::get_redis(&if SETTINGS.get().unwrap().default {
                 TEST_REDIS.get().unwrap().handle()?
             } else {
                 REDIS.get().unwrap().handle()?
@@ -116,6 +122,11 @@ lazy_static! {
     pub static ref ID:String={
         Master::uid()
     };
+	pub static ref LOG_DIR:Result<PathBuf>={
+		let mut x = Master::new()?.logs;
+		x.push("Ae_Logs.log");
+		return Ok(x);
+	};
 }
 //#相关配置
 pub static MASTER: OnceCell<Master> = OnceCell::new();
@@ -127,8 +138,8 @@ pub static TEST_MASTER: OnceCell<Master> = OnceCell::new();
 pub static TEST_SLAVE: OnceCell<Slave> = OnceCell::new();
 pub static TEST_MYSQL: OnceCell<SlimeMysql> = OnceCell::new();
 pub static TEST_REDIS: OnceCell<SlimeRedis> = OnceCell::new();
-///#测试模式true/执行false
-pub const MODEL: bool = true;
+///#系统设置
+pub static SETTINGS: OnceCell<Setting> = OnceCell::new();
 ///#节点文件配置
 pub const NODE_INIT: [&str; 2] = [".", "NodeSettings.json"];
 ///#Mysql数据端口配置

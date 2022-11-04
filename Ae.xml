@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!--是否默认模式-->
-<default>true</default>
+<DEFECTS>
+    <setting>
+        <!--是否默认模式-->
+        <default>true</default>
+        <!--是否开启logs-->
+        <logs>false</logs>
+    </setting>
+</DEFECTS>

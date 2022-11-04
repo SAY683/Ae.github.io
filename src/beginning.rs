@@ -1,11 +1,13 @@
 use std::sync::atomic::Ordering;
-use crate::{Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, LOCAL_IP, MASTER, MYSQL, MYSQL_VERSION, REDIS, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL, TEST_REDIS, TEST_SLAVE, THE_NODE_MODEL};
+use crate::{Master, Result, Slave, SlimeMysql, SlimeNode, SlimeRedis, LOCAL_IP, MASTER, MYSQL, MYSQL_VERSION, REDIS, REDIS_VERSION, SLAVE, TEST_MASTER, TEST_MYSQL, TEST_REDIS, TEST_SLAVE, THE_NODE_MODEL, LOG_DIR, SETTINGS};
 use compact_str::CompactString;
 use log::{log, Level};
 use FileOperations::local_data;
 use FileOperations::local_data::FileOperation;
 use MysqlOperating::{MysqlServer, AE_EXAM};
 use crate::hdfs_service::HdfsManager;
+use ftlog::writer::file_split::Period;
+use ftlog::{LevelFilter, LogBuilder};
 
 ///初始
 pub async fn beginning(e: bool) -> Result<()> {
@@ -124,5 +126,15 @@ fn master_init(e: bool) -> Result<()> {
 		),
 	])])
 		.run()?;
+	return Ok(());
+}
+
+pub fn beginning_log(e: bool) -> Result<()> {
+	if e {
+		let x = LOG_DIR.as_ref().unwrap();
+		LogBuilder::new().file(x).file_split(x, Period::Day).max_log_level(LevelFilter::Info).build()?.init().expect("log error");
+	} else {
+		log!(Level::Info,"Not Logs");
+	}
 	return Ok(());
 }

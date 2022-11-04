@@ -2,7 +2,7 @@
 文件操作
  */
 pub mod condition;
-mod program_file_setup;
+pub mod program_file_setup;
 
 ///#本机数据
 pub mod local_data {

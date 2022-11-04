@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 use std::path::{PathBuf};
 use std::sync::Arc;
-use crate::{Master, Slave, SlimeNode, LOCAL_IP, MASTER_MODEL, MODEL, THE_NODE_MODEL};
+use crate::{Master, Slave, SlimeNode, LOCAL_IP, MASTER_MODEL, THE_NODE_MODEL};
 use std::sync::atomic::Ordering;
 use parking_lot::RwLock;
 use s2n_quic::{Server, Client};
@@ -20,18 +20,19 @@ pub struct HdfsManager {
 
 ///#[hdfs_service::HdfsManager]实现
 pub mod hdfs_manager {
+	use crate::SETTINGS;
 	use super::*;
 	
 	impl SlimeNode for HdfsManager {
 		///#数据返回
 		fn new() -> anyhow::Result<Self> {
 			return Ok(HdfsManager {
-				master: (if MODEL == true {
+				master: (if SETTINGS.get().unwrap().default {
 					Master::new()?
 				} else {
 					Master::default()
 				}),
-				node: (if MODEL == true {
+				node: (if SETTINGS.get().unwrap().default {
 					Slave::new()?
 				} else {
 					Slave::default()
