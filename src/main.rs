@@ -1,17 +1,17 @@
 #![feature(
-    arbitrary_enum_discriminant,
-    type_alias_impl_trait,
-    atomic_from_mut,
-    inline_const,
-    const_mut_refs,
-    associated_type_defaults,
-    array_zip,
-    box_syntax,
-    let_chains,
-    unboxed_closures,
-    async_closure,
-    type_ascription,
-    never_type
+arbitrary_enum_discriminant,
+type_alias_impl_trait,
+atomic_from_mut,
+inline_const,
+const_mut_refs,
+associated_type_defaults,
+array_zip,
+box_syntax,
+let_chains,
+unboxed_closures,
+async_closure,
+type_ascription,
+never_type,
 )]
 
 pub mod beginning;
@@ -48,32 +48,32 @@ use RedisOperating::{RedisServer, SlimeRedis};
 ///#核心执行
 #[main]
 pub async fn main() -> Result<()> {
-    initialization().await.unwrap_or_else(|x| panic!("{}", x));
-    run().await.unwrap_or_else(|x| panic!("{}", x));
-    shut_down().await.unwrap_or_else(|x| panic!("{}", x));
-    return Ok(());
+	initialization().await.unwrap_or_else(|x| panic!("{}", x));
+	run().await.unwrap_or_else(|x| panic!("{}", x));
+	shut_down().await.unwrap_or_else(|x| panic!("{}", x));
+	return Ok(());
 }
 
 ///#初始化
 #[framed]
 async fn initialization() -> Result<()> {
-    let x = ApplicationSettings::new()?.handle()?;
-    SETTINGS.get_or_init(|| x);
-    beginning(SETTINGS.get().unwrap().default).await?;
-    beginning_log(SETTINGS.get().unwrap().logs)?;
-    return Ok(());
+	let x = ApplicationSettings::new()?.handle()?;
+	SETTINGS.get_or_init(|| x);
+	beginning(SETTINGS.get().unwrap().default).await?;
+	beginning_log(SETTINGS.get().unwrap().logs)?;
+	return Ok(());
 }
 
 ///#运行
 #[framed]
 async fn run() -> Result<()> {
-    return Ok(());
+	return Ok(());
 }
 
 ///#关闭
 #[framed]
 async fn shut_down() -> Result<()> {
-    return Ok(());
+	return Ok(());
 }
 lazy_static! {
     //ping mysql联通性返回
@@ -156,7 +156,7 @@ pub const REDIS_PORT_INIT: [&str; 2] = [".", "RedisPortSettings.json"];
 
 ///#异步闭包
 pub struct AsyncDriver<'life, Rx: Sized>(
-    pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
+	pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
 );
 
 ///#异步池[async_trait]实现注意
