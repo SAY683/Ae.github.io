@@ -13,6 +13,8 @@ anyhow = "*"#:Resultj兼容处理>
 thiserror = "*"#:错误指定>
 serde = { version = "*", features = ["derive"] }#:数据序列>
 s2n-quic = {version = "*",features=["provider-event-tracing"]}#QUIC>
+async-trait = "*"#:async-trait>
+parking_lot = { version = "*", feature = ["const_fair_mutex", "const_mutex", "const_reentrant_mutex", "const_rwlock"] }#:数据锁>
 [lib]#[高可用库]
 path = "./src/main.rs"
 crate-type = ["cdylib", "staticlib", "rlib"]

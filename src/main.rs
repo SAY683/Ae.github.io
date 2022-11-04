@@ -1,17 +1,17 @@
 #![feature(
-arbitrary_enum_discriminant,
-type_alias_impl_trait,
-atomic_from_mut,
-inline_const,
-const_mut_refs,
-associated_type_defaults,
-array_zip,
-box_syntax,
-let_chains,
-unboxed_closures,
-async_closure,
-type_ascription,
-never_type
+    arbitrary_enum_discriminant,
+    type_alias_impl_trait,
+    atomic_from_mut,
+    inline_const,
+    const_mut_refs,
+    associated_type_defaults,
+    array_zip,
+    box_syntax,
+    let_chains,
+    unboxed_closures,
+    async_closure,
+    type_ascription,
+    never_type
 )]
 
 pub mod beginning;
@@ -19,12 +19,15 @@ mod database_link;
 mod hdfs_service;
 pub mod node_data;
 
+use crate::beginning::beginning_log;
 pub use crate::node_data::{Master, Slave};
 pub use anyhow::Result;
+use async_backtrace::framed;
 use beginning::beginning;
 use database_link::mysql::StorageLocation;
 use deadpool::managed::{Manager, Pool};
 use deadpool_redis::redis::Client;
+use deluge::Iter;
 use futures::executor::block_on;
 use lazy_static::lazy_static;
 use node_data::SlimeNode;
@@ -34,45 +37,43 @@ use rbatis::Rbatis;
 use std::future::Future;
 use std::net::UdpSocket;
 use std::path::PathBuf;
-use async_backtrace::framed;
 use std::pin::Pin;
 use std::sync::atomic::AtomicBool;
-use tokio::{main};
+use tokio::main;
+use FileOperations::program_file_setup::{ApplicationSettings, Setting};
+use HdfsService::SAR;
 use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
-use deluge::Iter;
-use FileOperations::program_file_setup::{ApplicationSettings, Setting};
-use crate::beginning::beginning_log;
 
 ///#核心执行
 #[main]
 pub async fn main() -> Result<()> {
-	initialization().await.unwrap_or_else(|x| panic!("{}", x));
-	run().await.unwrap_or_else(|x| panic!("{}", x));
-	shut_down().await.unwrap_or_else(|x| panic!("{}", x));
-	return Ok(());
+    initialization().await.unwrap_or_else(|x| panic!("{}", x));
+    run().await.unwrap_or_else(|x| panic!("{}", x));
+    shut_down().await.unwrap_or_else(|x| panic!("{}", x));
+    return Ok(());
 }
 
 ///#初始化
 #[framed]
 async fn initialization() -> Result<()> {
-	let x = ApplicationSettings::new()?.handle()?;
-	SETTINGS.get_or_init(|| x);
-	beginning(SETTINGS.get().unwrap().default).await?;
-	beginning_log(SETTINGS.get().unwrap().logs)?;
-	return Ok(());
+    let x = ApplicationSettings::new()?.handle()?;
+    SETTINGS.get_or_init(|| x);
+    beginning(SETTINGS.get().unwrap().default).await?;
+    beginning_log(SETTINGS.get().unwrap().logs)?;
+    return Ok(());
 }
 
 ///#运行
 #[framed]
 async fn run() -> Result<()> {
-	return Ok(());
+    return Ok(());
 }
 
 ///#关闭
 #[framed]
 async fn shut_down() -> Result<()> {
-	return Ok(());
+    return Ok(());
 }
 lazy_static! {
     //ping mysql联通性返回
@@ -119,14 +120,20 @@ lazy_static! {
                 REDIS.get().unwrap().handle()?
             })?)
     };
+    //随机ID
     pub static ref ID:String={
         Master::uid()
     };
-	pub static ref LOG_DIR:Result<PathBuf>={
-		let mut x = Master::new()?.logs;
-		x.push("Ae_Logs.log");
-		return Ok(x);
-	};
+    //LOG路径
+    pub static ref LOG_DIR:Result<PathBuf>={
+        let mut x = Master::new()?.logs;
+        x.push("Ae_Logs.log");
+        return Ok(x);
+    };
+    //通信密钥
+    pub static ref COMMUNICATION_PME:Result<SAR>={
+        return Ok(SAR::new()?);
+    };
 }
 //#相关配置
 pub static MASTER: OnceCell<Master> = OnceCell::new();
@@ -149,7 +156,7 @@ pub const REDIS_PORT_INIT: [&str; 2] = [".", "RedisPortSettings.json"];
 
 ///#异步闭包
 pub struct AsyncDriver<'life, Rx: Sized>(
-	pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
+    pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
 );
 
 ///#异步池[async_trait]实现注意
