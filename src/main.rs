@@ -16,8 +16,8 @@ never_type,
 #![feature(label_break_value)]
 
 pub mod beginning;
-mod database_link;
-mod hdfs_service;
+pub mod database_link;
+pub mod hdfs_service;
 pub mod node_data;
 
 use crate::beginning::beginning_log;
@@ -40,8 +40,10 @@ use std::net::UdpSocket;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::atomic::AtomicBool;
+use serde::{Deserialize, Serialize};
 use tokio::main;
 use FileOperations::program_file_setup::{ApplicationSettings, Setting};
+use HdfsService::qic_server::QuiContinue;
 use HdfsService::SAR;
 use MysqlOperating::{MysqlServer, SlimeMysql};
 use RedisOperating::{RedisServer, SlimeRedis};
@@ -68,6 +70,13 @@ async fn initialization() -> Result<()> {
 ///#运行
 #[framed]
 async fn run() -> Result<()> {
+	let mut z = hdfs_service::HdfsService::default();
+	let mut x = Vec::new();
+	x.push(z.server_wait(None).await.unwrap());
+	x.push(z.client_wait("localhost", None).await.unwrap());
+	for i in x.into_iter() {
+		i.await??;
+	}
 	return Ok(());
 }
 
@@ -159,6 +168,9 @@ pub const REDIS_PORT_INIT: [&str; 2] = [".", "RedisPortSettings.json"];
 pub struct AsyncDriver<'life, Rx: Sized>(
 	pub Pin<Box<dyn Future<Output = Result<Rx>> + Send + Sync + 'life>>,
 );
+
+///#异步脚本解析成为结构执行[serde]
+pub struct AsyncTheScript<'life, Rx: Sized + Serialize + Deserialize<'life>, Re: Sized + Serialize + Deserialize<'life>>(pub Box<dyn FnOnce(Rx) -> AsyncDriver<'life, Re> + Send + Sync + 'life>);
 
 ///#异步池[async_trait]实现注意
 pub struct AsynchronousPool<G: Sized + Manager>(pub Pool<G>);

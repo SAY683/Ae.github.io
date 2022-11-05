@@ -127,10 +127,11 @@ pub enum HdfsService {
 pub mod hdfs_service {
 	use super::*;
 	use async_trait::async_trait;
-	use s2n_quic::Connection;
 	use std::future::{ready, IntoFuture, Ready};
 	use s2n_quic::client::{Connect};
-	use crate::{MASTER, SETTINGS, TEST_MASTER};
+	use tokio::spawn;
+	use tokio::task::JoinHandle;
+	use crate::{AsyncTheScript, MASTER, SETTINGS, TEST_MASTER};
 	
 	///#默认QUI
 	impl Default for HdfsService {
@@ -158,44 +159,49 @@ pub mod hdfs_service {
 	
 	#[async_trait]
 	impl QuiContinue for HdfsService {
-		type Server = Option<Connection>;
-		///type Server = Option<Connection>;
-		///async fn server_wait(&mut self) -> Result<Self::Server>
-		async fn server_wait(&mut self) -> Result<Self::Server> {
-			return Ok(
-				if let Some(mut x) = HdfsService::the_thread_of_execution(self)? {
-					x.server.accept().await
-				} else {
-					None
-				},
-			);
-		}
-		
-		type Client = Option<Connection>;
-		///type Client = Option<Connection>;
-		///async fn client_wait(self) -> Result<Self::Client>
-		///idea的rust插件兼容性问题否则可以
-		///async fn client_wait(&mut self, host_name: &str) -> Result<Self::Client> {
-		///			return Ok(if let Some(x) = HdfsService::the_thread_of_execution(self)? &&let HdfsService::ServiceQUIC { key: _, host } = self{
-		///				let mut x = x.client.connect(Connect::new(host.to_string().as_str().parse::<SocketAddr>()?).with_server_name(host_name)).await?;
-		///			    x.keep_alive(true)?;
-		///				Some(x)
-		///			} else {
-		///				None
-		///			});
-		///		}
-		async fn client_wait(&mut self, host_name: &str) -> Result<Self::Client> {
-			return Ok(if let Some(x) = HdfsService::the_thread_of_execution(self)? {
-				if let HdfsService::ServiceQUIC { key: _, host } = self {
-					let mut x = x.client.connect(Connect::new(host.to_string().as_str().parse::<SocketAddr>()?).with_server_name(host_name)).await?;
-					x.keep_alive(true)?;
-					Some(x)
-				} else {
-					None
+		//脚本
+		type Data = Option<AsyncTheScript<'static, String, String>>;
+		//线程返回
+		type Perform = JoinHandle<Result<()>>;
+		async fn server_wait(&mut self, _: Self::Data) -> Result<Self::Perform> {
+			let mut x = self.the_thread_of_execution()?.expect("Not Qui").server;
+			return Ok(spawn(async move {
+				while let Some(mut connection) = x.accept().await {
+					spawn(async move {
+						while let Ok(Some(mut stream)) = connection.accept_bidirectional_stream().await {
+							spawn(async move {
+								// echo any data back to the stream
+								while let Ok(Some(data)) = stream.receive().await {
+									stream.send(data).await.expect("stream should be open");
+								}
+							});
+						}
+					});
 				}
+				Ok(())
+			}));
+		}
+		async fn client_wait(&mut self, name: &str, _: Self::Data) -> Result<Self::Perform> {
+			let mut x = self.the_thread_of_execution()?.expect("Not Qui").client.connect(Connect::new(*if let HdfsService::ServiceQUIC { key: _, host } = self {
+				Some(host)
+			} else if let HdfsService::Default { key: _, host } = self {
+				Some(host)
 			} else {
 				None
-			});
+			}.expect("Not Qui")).with_server_name(name)).await?;
+			x.keep_alive(true)?;
+			x.ping()?;
+			let v = x.open_bidirectional_stream().await?;
+			return Ok(spawn(async move {
+				let (mut receive_stream, mut send_stream) = v.split();
+				// spawn a task that copies responses from the server to stdout
+				spawn(async move {
+					let _ = tokio::io::copy(&mut receive_stream, &mut tokio::io::stdout()).await;
+				});
+				// copy data from stdin and send it to the server
+				tokio::io::copy(&mut tokio::io::stdin(), &mut send_stream).await?;
+				Ok(())
+			}));
 		}
 	}
 	
@@ -214,7 +220,7 @@ pub mod hdfs_service {
 				}
 			} {
 				Some(HdfsQuick {
-					client: HdfsService::client(key.cert.as_str(), host.to_string().as_str())?,
+					client: HdfsService::client(key.cert.as_str())?,
 					server: HdfsService::server(
 						key.cert.as_str(),
 						key.key.as_str(),
