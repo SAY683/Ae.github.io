@@ -70,13 +70,13 @@ async fn initialization() -> Result<()> {
 ///#运行
 #[framed]
 async fn run() -> Result<()> {
-	let mut z = hdfs_service::HdfsService::default();
-	let mut x = Vec::new();
-	x.push(z.server_wait(None).await.unwrap());
-	x.push(z.client_wait("localhost", None).await.unwrap());
-	for i in x.into_iter() {
-		i.await??;
-	}
+//	let mut z = hdfs_service::HdfsService::default();
+//	let mut x = Vec::new();
+//	x.push(z.server_wait(None).await.unwrap());
+//	x.push(z.client_wait("localhost", None).await.unwrap());
+//	for i in x.into_iter() {
+//		i.await??;
+//	}
 	return Ok(());
 }
 
@@ -163,6 +163,8 @@ pub const NODE_INIT: [&str; 2] = [".", "NodeSettings.json"];
 pub const MYSQL_PORT_INIT: [&str; 2] = [".", "MysqlPortSettings.json"];
 ///#Redis数据端口配置
 pub const REDIS_PORT_INIT: [&str; 2] = [".", "RedisPortSettings.json"];
+///#命令函数路径
+pub const ORDER:&str="./order/order.proto";
 
 ///#异步闭包
 pub struct AsyncDriver<'life, Rx: Sized>(

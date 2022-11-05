@@ -10,6 +10,8 @@ categories = ["command-line-utilities"]
 readme = "README.md"
 homepage = "https://github.com/SAY683/Ae.github.io.git"
 repository = "https://github.com/SAY683/Ae.github.io.git"
+[badges]
+maintenance = { status = "开发中",deprecated="gRPC依赖问题依然无法解决 理论上在linux下可以解决但是没有测试 而且项目构架混乱目前程序将移交新项目"}
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -64,6 +66,7 @@ hashbrown = "*"#:|哈希(性能)>
 spin = "*"#:|自旋锁>
 parking_lot = { version = "*", feature = ["const_fair_mutex", "const_mutex", "const_reentrant_mutex", "const_rwlock"] }#:数据锁>
 compact_str = "*"#:String优化版>
+arc-swap = "*"#:原子锁>
 #dataOptimization<+>dataOptimization<+>dataOptimization<+>dataOptimization<+>dataOptimization<+>
 
 #eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>eventHandling<+>
@@ -86,6 +89,7 @@ http = "*"#:请求处理>
 reqwest = { version = "*", features = ["json", "socks", "stream", "blocking"] }#:http处理[单线程阻塞]>
 webpki-roots = "*"#:TLS证书>
 tokio-rustls = "*"#:AsyncTLS>
+tonic = { version = "*", features = ["async-trait", "tokio-rustls", "channel", "prost-derive", "prost", "gzip"] }#:gRPC>
 #network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>network<+>
 
 #gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>gui<+>
@@ -115,6 +119,8 @@ HdfsService = { path = "./src/HdfsService" }
 #NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>NativeLibrary<+>
 [workspace]#[集中构建]
 members = ["src/PropertyMacro", "src/ExternalInterface", "src/GuiInterface", "src/FileOperations", "src/MysqlOperating", "src/RedisOperating", "src/HdfsService"]
+[build-dependencies]#:[构建包]
+tonic-build = "*"
 [lib]#[高可用库]
 path = "./src/main.rs"
 [profile.dev]#[DEBUG]
